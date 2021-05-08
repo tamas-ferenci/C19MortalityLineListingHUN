@@ -1,0 +1,2 @@
+# C19MortalityLineListingHUN
+A magyarországi regisztrált koronavírusos halottak adatainak elemzése
