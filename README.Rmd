@@ -41,13 +41,15 @@ A scrape-eléshez első lépésben az `xml2` csomaggal beolvassuk a központi ol
 
 ```{r}
 pg <- xml2::read_html("https://koronavirus.gov.hu/elhunytak")
-lastpg <- strsplit(rvest::html_attr(rvest::html_node(pg, xpath = "//li[@class='pager-last']/a"), "href"), "=")[[1]][2]
+lastpg <- strsplit(rvest::html_attr(rvest::html_node(pg, xpath = "//li[@class='pager-last']/a"), "href"),
+                   "=")[[1]][2]
 ```
 
 Ezt követően már tudjuk, hogy meddig kell menni; ezeket az oldalakat egyesével leszedjük (`xml2::read_html`) és az `rvest::html_table`-lel parse-oljuk:
 
 ```{r}
-MortData <- rbindlist(lapply(0:lastpg, function(i) rvest::html_table(xml2::read_html(paste0("https://koronavirus.gov.hu/elhunytak?page=", i)))[[1]]))
+MortData <- rbindlist(lapply(0:lastpg, function(i)
+  rvest::html_table(xml2::read_html(paste0("https://koronavirus.gov.hu/elhunytak?page=", i)))[[1]]))
 ```
 
 Adjunk rövid neveket az oszlopoknak:
@@ -68,14 +70,6 @@ Nem túlságosan, úgyhogy ezt javítsuk ki:
 MortData$Sex <- as.factor(ifelse(MortData$Sex%in%c("férfi", "Férfi"), "Férfi", "Nő"))
 ```
 
-A későbbiekhez (de kizárólag vizualizációs célokra! nem elemzéshez!) kiszámítunk egy kategorizált életkort is:
-
-```{r}
-MortData$AgeCut <- cut(MortData$Age, c(-Inf, 50, 60, 70, 80, 90, Inf), right = FALSE,
-                       labels = c("<50", "50-60", "60-70", "70-80", "80-90", "90+"))
-```
-
-
 Ahogy volt róla szó, dátumhoz csak úgy tudunk rendelni, ha megnézzük a halálozások idősorát. Szedjük le az OWID-tól, és vonjuk ki egy napot a dátumból, mert az adott napon jelentett halálozások valójában az előző napon történtek:
 
 ```{r}
@@ -95,7 +89,7 @@ MortData$Date <- DeathDates
 A kapott adatbázist mentsük is el, hogy az esetleges egyéb felhasználóknak egyből elérhető legyen, és ne kelljen a letöltést kivárni:
 
 ```{r}
-# saveRDS(MortData, "MortData.rds")
+saveRDS(MortData, "MortData.rds")
 ```
 
 ## Az adatbázis jellemzői
@@ -111,7 +105,8 @@ Az adatbázis szerint az elhunytak közül `r sum(MortData$Sex=="Férfi")` fő (
 Az életkori eloszlás:
 
 ```{r}
-ggplot(MortData, aes(x = Age)) + stat_density(geom = "line", position = "identity") + labs(x = "Életkor [év]", y = "")
+ggplot(MortData, aes(x = Age)) + stat_density(geom = "line", position = "identity") +
+  labs(x = "Életkor [év]", y = "")
 ```
 
 (Csábító lenne kiszámítani a korspecifikus halálozási arányt, de ne feledjük, hogy nem tudhatjuk, hogy az átfertőzöttség függ-e az életkortól.)
@@ -119,8 +114,8 @@ ggplot(MortData, aes(x = Age)) + stat_density(geom = "line", position = "identit
 Az elhunytak életkori eloszlása nem szerint:
 
 ```{r}
-ggplot(MortData, aes(x = Age, color = Sex)) + stat_density(geom = "line", position = "identity") + labs(x = "Életkor [év]", y = "") +
-  theme(legend.position = "bottom", legend.title = element_blank())
+ggplot(MortData, aes(x = Age, color = Sex)) + stat_density(geom = "line", position = "identity") +
+  labs(x = "Életkor [év]", y = "") + theme(legend.position = "bottom", legend.title = element_blank())
 ```
 
 (Ez az ábra a csoporton belüli eloszlást mutatja, tehát nem jeleníti meg, hogy a férfiak és nők száma nem ugyanannyi.)
@@ -143,13 +138,17 @@ temp1$Var1 <- as.Date(temp1$Var1, origin = "1970-01-01")
 Ábrázoljuk az eredményt, minél fehérebb a szín, annál nagyobb ott a sűrűség, minél sötét:
 
 ```{r}
-ggplot(temp1, aes(x = Var1, y = Var2, fill = value)) + geom_tile() + scale_fill_distiller(palette = 'YlOrRd') + scale_x_date(date_breaks = "month", date_labels = "%b") + labs(x = "", y = "Életkor [év]", fill = "")
+ggplot(temp1, aes(x = Var1, y = Var2, fill = value)) + geom_tile() +
+  scale_fill_distiller(palette = 'YlOrRd') + scale_x_date(date_breaks = "month", date_labels = "%b") +
+  labs(x = "", y = "Életkor [év]", fill = "")
 ```
 
 Nem túl látványos amit kaptunk, ennek az az oka, hogy egyben van simítva az egész adatsor, így a kiugró halálozási napok magas sűrűsége annyira összenyomja a színskálát, hogy ezen kívül szinte minden megkülönböztethetetlenné válik. Ezen segíthetünk, ha nem lineárisan színezünk:
 
 ```{r}
-ggplot(temp1, aes(x = Var1, y = Var2, fill = value)) + geom_tile() + scale_fill_distiller(palette = 'YlOrRd', trans = "sqrt") + scale_x_date(date_breaks = "month", date_labels = "%b") + labs(x = "", y = "Életkor [év]", fill = "")
+ggplot(temp1, aes(x = Var1, y = Var2, fill = value)) + geom_tile() +
+  scale_fill_distiller(palette = 'YlOrRd', trans = "sqrt") +
+  scale_x_date(date_breaks = "month", date_labels = "%b") + labs(x = "", y = "Életkor [év]", fill = "")
 ```
 
 (Ez négyzetgyök-transzformációval készült; a nagyon extrém alacsony értékek miatt érdekes módon a logaritmus még annál is rosszabb eredményt ad, mint a kiindulási ábra)
@@ -164,15 +163,20 @@ temp2$Var1 <- as.Date(temp2$Var1, origin = "1970-01-01")
 És ezt ábrázolva megkapjuk a megfelelő végeredményt:
 
 ```{r}
-ggplot(temp2, aes(x = Var1, y = Var2, fill = value)) + geom_tile() + scale_fill_distiller(palette = 'YlOrRd') + scale_x_date(date_breaks = "month", date_labels = "%b") + labs(x = "", y = "Életkor [év]", fill = "")
+ggplot(temp2, aes(x = Var1, y = Var2, fill = value)) + geom_tile() +
+  scale_fill_distiller(palette = 'YlOrRd') + scale_x_date(date_breaks = "month", date_labels = "%b") +
+  labs(x = "", y = "Életkor [év]", fill = "")
 ```
 
 Látványosabbá tehetjük az eredményt, ha feltüntetjük az átlagos életkort (mivel nagyon finom felbontásban megvan az eloszlást, ezt könnyen kiszámolhatjuk, lényegében numerikusan integrálunk), illetve ábrázoljuk csak a relevánsabb életkortartományt:
 
 ```{r}
-ggplot(temp2, aes(x = Var1, y = Var2, fill = value)) + geom_tile() + scale_fill_distiller(palette = 'YlOrRd') +
-  geom_line(data = temp2[,.(weighted.mean(Var2, value)),.(Var1)], aes(x = Var1, y = V1), inherit.aes = FALSE, color = "white") +
-  lims(y = c(40, NA)) + scale_x_date(date_breaks = "month", date_labels = "%b") + labs(x = "", y = "Életkor [év]", fill = "")
+ggplot(temp2, aes(x = Var1, y = Var2, fill = value)) + geom_tile() +
+  scale_fill_distiller(palette = 'YlOrRd') +
+  geom_line(data = temp2[,.(weighted.mean(Var2, value)), .(Var1)], aes(x = Var1, y = V1),
+            inherit.aes = FALSE, color = "white") +
+  lims(y = c(40, NA)) + scale_x_date(date_breaks = "month", date_labels = "%b") +
+  labs(x = "", y = "Életkor [év]", fill = "")
 ```
 
 ## Technikai részletek: a társbetegségek kikódolása
@@ -194,7 +198,8 @@ Comorbs <- lapply(strsplit(MortData$Comorbidities2, "[,;+]"), function(x) tolowe
 Nézzük meg mik a leggyakoribb komorbiditások:
 
 ```{r}
-knitr::kable(sort(table(unlist(Comorbs)), decreasing = TRUE)[1:50], col.names = c("Társbetegség", "Gyakoriság"))
+knitr::kable(sort(table(unlist(Comorbs)), decreasing = TRUE)[1:50],
+             col.names = c("Társbetegség", "Gyakoriság"))
 ```
 
 Szedjük ki az egyedi neveket:
@@ -216,7 +221,8 @@ similarityres <- outer(IndivComorbNames, IndivComorbNames, stringdist::stringsim
 Ez megadja valamennyi megadott egyedi társbetegség-pár hasonlóságát. Például azon társbetegségek listája, melyek legalább $0,\!8$ hasonlóságúak a magasvérnyomás-betegséggel:
 
 ```{r}
-knitr::kable(IndivComorbNames[which(similarityres[which(IndivComorbNames=="magasvérnyomás-betegség"),]>0.8)], col.names = "Megnevezés")
+knitr::kable(IndivComorbNames[which(similarityres[which(IndivComorbNames=="magasvérnyomás-betegség"),]>0.8)],
+             col.names = "Megnevezés")
 ```
 
 A probléma, hogy ekkora listában teljesen reménytelen ezeket kézzel megkeresni. Szerencsére egy ügyes trükkel ezen segíthetünk. Csináljunk egy hierarchikus klaszterezést, majd a kapott fát vágjuk el adott mélységben! Arra vigyázzunk egyedül, ehhez távolságra van szükségünk, így használjunk 1 mínusz hasonlóságot:
@@ -267,7 +273,8 @@ sort(unique(do.call(c, sapply(MortData$Comorbidities, strsplit, split = ""))))
 Van egy furcsa Unicode-karakter, azt eltüntetjük:
 
 ```{r}
-MortData$Comorbidities[grep("\u0096", MortData$Comorbidities)] <- gsub("\u0096", "", MortData$Comorbidities[grep("\u0096", MortData$Comorbidities)])
+MortData$Comorbidities[grep("\u0096", MortData$Comorbidities)] <-
+  gsub("\u0096", "", MortData$Comorbidities[grep("\u0096", MortData$Comorbidities)])
 ```
 
 Az ékezetektől legegyszerűbben a `stringi` csomag transzliterálásával szabadulhatunk meg értelmeszerűen (tehát, hogy az "á"-ból "a" legyen, az "é"-ből "e" stb.):
@@ -281,7 +288,6 @@ Ellenőrizzük le, hogy most már rendben vagyunk-e:
 ```{r}
 sort(unique(do.call(c, sapply(MortData$Comorbidities, strsplit, split = ""))))
 ```
-
 
 Most már jöhet a kikódolás. Én 11 fontos társbetegségekre alkottam meg keresőkifejezést (reguláris kifejezés formájában) a fenti szempontok alapján. A társbetegségek a következőek: pitvarfibrilláció, rosszindulatú daganat, krónikus obstruktív tüdőbetegség, demencia, cukorbetegség, szívelégtelenség, magasvérnyomás-betegség, ischaemiás szívbetegség, krónikus veseelégtelenség, krónikus májbetegség, stroke. A keresőkifejezések a következőek:
 
@@ -306,27 +312,36 @@ Kódoljuk is ki ezeket a fenti táblázatnak megfelelően:
 
 ```{r}
 MortData$atr_fib <- grepl("fibril", MortData$Comorbidities, ignore.case = TRUE)
-MortData$cancer <- grepl("rak|tumor|noma|daganat|metas[z]?t|attet", MortData$Comorbidities, ignore.case = TRUE)
+MortData$cancer <- grepl("rak|tumor|noma|daganat|metas[z]?t|attet", MortData$Comorbidities,
+                         ignore.case = TRUE)
 MortData$copd <- grepl("obstru[c|k]tiv[[:blank:]]tudo|copd", MortData$Comorbidities, ignore.case = TRUE)
 MortData$demen <- grepl("demen", MortData$Comorbidities, ignore.case = TRUE)
-MortData$diab <- grepl("diabetes|cukorbeteg|mellitus", MortData$Comorbidities, ignore.case = TRUE)|grepl("DM|IDDM|T1DM|T2DM", MortData$Comorbidities, ignore.case = FALSE)
+MortData$diab <- grepl("diabetes|cukorbeteg|mellitus", MortData$Comorbidities, ignore.case = TRUE)|grepl(
+  "DM|IDDM|T1DM|T2DM", MortData$Comorbidities, ignore.case = FALSE)
 MortData$h_fail <- grepl("szivelegtelen", MortData$Comorbidities, ignore.case = TRUE)
-MortData$hypert <- grepl("h[i|y]pertonia|magas[[:blank:]|-]?vernyomas", MortData$Comorbidities, ignore.case = TRUE)
-MortData$ihd <- grepl("isch[a]?emias[[:blank:]]sziv|iszk[a]?emias[[:blank:]]sziv|angina|infar[k|c]tus", MortData$Comorbidities, ignore.case = TRUE)|grepl("IHD|CAD|CHD|AMI", MortData$Comorbidities, ignore.case = FALSE)
+MortData$hypert <- grepl("h[i|y]pertonia|magas[[:blank:]|-]?vernyomas", MortData$Comorbidities,
+                         ignore.case = TRUE)
+MortData$ihd <- grepl("isch[a]?emias[[:blank:]]sziv|iszk[a]?emias[[:blank:]]sziv|angina|infar[k|c]tus",
+                      MortData$Comorbidities, ignore.case = TRUE)|grepl(
+                        "IHD|CAD|CHD|AMI", MortData$Comorbidities, ignore.case = FALSE)
 MortData$renal <- grepl("kronikus[[:blank:]]vese[[:blank:]|-]?elegtelen|chronicus[[:blank:]]vese[[:blank:]|-]?elegtelen", MortData$Comorbidities, ignore.case = TRUE)
-MortData$liver <- grepl("kronikus[[:blank:]]maj|chronicus[[:blank:]]maj|majzsugor|majelegtelen|cirr|kronikus[[:blank:]]hepa|chronicus[[:blank:]]hepa|majmegna|alkoholos[[:blank:]]maj", MortData$Comorbidities, ignore.case = TRUE)
-MortData$stroke <- grepl("stroke|sztrok|agyi[[:blank:]]erkat|agyverzes", MortData$Comorbidities, ignore.case = TRUE)
+MortData$liver <- grepl("kronikus[[:blank:]]maj|chronicus[[:blank:]]maj|majzsugor|majelegtelen|cirr|
+                        kronikus[[:blank:]]hepa|chronicus[[:blank:]]hepa|majmegna|alkoholos[[:blank:]]maj",
+                        MortData$Comorbidities, ignore.case = TRUE)
+MortData$stroke <- grepl("stroke|sztrok|agyi[[:blank:]]erkat|agyverzes", MortData$Comorbidities,
+                         ignore.case = TRUE)
 ```
 
-A megjelenítéshez eltárolunk szép nevetek is:
+A megjelenítéshez eltárolunk szép neveket is:
 
 ```{r}
 ComorbLabels <- data.table(variable = c("atr_fib", "cancer", "copd", "demen", "diab",
                                         "h_fail", "hypert", "ihd", "renal", "liver", "stroke"),
                            varlabel = c("Pitvarfibrilláció", "Rosszindulatú daganat",
                                         "Krónikus obstruktív tüdőbetegség", "Demencia", "Cukorbetegség",
-                                        "Szívelégtelenség", "Magasvérnyomás-betegség", "Ischaemiás szívbetegség",
-                                        "Krónikus veseelégtelenség", "Krónikus májbetegség", "Stroke"))
+                                        "Szívelégtelenség", "Magasvérnyomás-betegség",
+                                        "Ischaemiás szívbetegség", "Krónikus veseelégtelenség",
+                                        "Krónikus májbetegség", "Stroke"))
 ```
 
 ## Az elhunytak társbetegségei
@@ -335,8 +350,8 @@ Nézzük meg, hogy az elhunytak mekkora hányada szenvedett a 11 vizsgált társ
 
 ```{r}
 ggplot(merge(melt(MortData,  measure.vars = ComorbLabels$variable), ComorbLabels)[
-  ,.(mean(value)*100, binom.test(sum(value), length(value))$conf.int[1]*100, binom.test(sum(value), length(value))$conf.int[2]*100),
-  .(varlabel)],
+  ,.(mean(value)*100, binom.test(sum(value), length(value))$conf.int[1]*100,
+     binom.test(sum(value), length(value))$conf.int[2]*100), .(varlabel)],
   aes(x = varlabel, y = V1, ymin = V2, ymax = V3)) +
   geom_point(position = position_dodge(width = 0.5)) + coord_flip() +
   geom_errorbar(width = 0.5) + labs(x = "", y = "Prevalencia [%]")
@@ -349,10 +364,12 @@ predgrid <- expand.grid(Age = seq(50, 100, 0.1), Sex = c("Férfi", "Nő"))
 ComorbPrevs <- rbindlist(setNames(lapply(ComorbLabels$variable, function(v) {
   fit <- mgcv::gam(as.formula(paste0(v, "~ s(Age, by = Sex) + Sex")), data = MortData, family = binomial)
   cbind(predgrid, with(predict(fit, predgrid, se.fit = TRUE),
-                       data.frame(est = plogis(fit), lwr = plogis(fit - 1.96*se.fit), upr = plogis(fit + 1.96*se.fit))))
+                       data.frame(est = plogis(fit), lwr = plogis(fit - 1.96*se.fit),
+                                  upr = plogis(fit + 1.96*se.fit))))
 }), ComorbLabels$varlabel), idcol = TRUE)
-ggplot(ComorbPrevs, aes(x = Age, y = est*100, color = Sex, fill = Sex, ymin = lwr*100, ymax = upr*100)) + geom_line() +
-  geom_ribbon(alpha = 0.2, linetype = 0) + facet_wrap(~.id) + labs(x = "Életkor [év]", y = "Prevalencia [%]") +
+ggplot(ComorbPrevs, aes(x = Age, y = est*100, color = Sex, fill = Sex, ymin = lwr*100, ymax = upr*100)) +
+  geom_line() + geom_ribbon(alpha = 0.2, linetype = 0) + facet_wrap(~.id) +
+  labs(x = "Életkor [év]", y = "Prevalencia [%]") +
   theme(legend.position = "bottom", legend.title = element_blank())
 ```
 
@@ -365,17 +382,29 @@ MortData$ComorbCount <- rowSums(MortData[, ComorbLabels$variable, with = FALSE])
 Nézzük hogyan alakul ennek a megoszlása:
 
 ```{r}
-ggplot(MortData, aes(x = ComorbCount)) + geom_bar() + labs(x = "Társbetegségek száma", y = "Gyakoriság [fő]s")
+ggplot(MortData, aes(x = ComorbCount)) + geom_bar() + labs(x = "Társbetegségek száma", y = "Gyakoriság [fő]")
+```
+
+Itt is vizsgáljuk meg a kérdést kor- és nemspecifikusan:
+
+```{r}
+ggplot(reshape2::melt(table(MortData$ComorbCount, MortData$Age, MortData$Sex)),
+       aes(x = Var2, fill = forcats::fct_rev(as.factor(Var1)), y = value)) + geom_area(position = "fill", alpha = 0.7) +
+  facet_grid(cols = vars(Var3)) + scale_x_continuous(expand = c(0, 0), limits = c(50, 90)) +
+  scale_y_continuous(labels = scales::percent_format(suffix = ""), expand = c(0, 0)) + 
+  labs(x = "Életkor [év]", y = "Arány [%]", fill = "Társbetegségek száma") +
+  guides(fill = guide_legend(reverse = TRUE)) +
+  theme(legend.position = "bottom", legend.title = element_blank(), panel.spacing = unit(1, "lines"))
 ```
 
 ## Továbbfejlesztési ötletek
 
-- [] Korspecifikus halálozás, mint alsó becslés az IFR-re.
-- [] Másféle KDE (pl. `ks` csomag) az életkori viszonyok időbeli alakulásának becslésére, vagy spline-ok.
-- [] További betegségek kikódolása.
-- [] Konfidenciaintervallum az átlagéletkorra.
-- [] Medián használata az életkor alakulásánál (`Hmisc::wtd.quantile` vagy numerikusan?).
-- [] Színskála eltüntetése?
-- [] Normálisabb konfidenciaintervallum a GAM-ra (`gratia`?).
-- [] Komorbiditások számának életkor- és nemspecifikus vizsgálata.
-- [] Komorbiditások kombinációinak komplexebb vizsgálata.
+- [ ] Korspecifikus halálozás, mint alsó becslés az IFR-re.
+- [ ] Másféle KDE (pl. `ks` csomag) az életkori viszonyok időbeli alakulásának becslésére, vagy spline-ok.
+- [ ] További betegségek kikódolása.
+- [ ] Konfidenciaintervallum az átlagéletkorra.
+- [ ] Medián használata az életkor alakulásánál (`Hmisc::wtd.quantile` vagy numerikusan?).
+- [ ] Színskála eltüntetése?
+- [ ] Normálisabb konfidenciaintervallum a GAM-ra (`gratia`?).
+- [ ] Komorbiditások számának életkor- és nemspecifikus vizsgálata.
+- [ ] Komorbiditások kombinációinak komplexebb vizsgálata.
