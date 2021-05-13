@@ -77,19 +77,18 @@ ezek a következők:
     szóköz (vagy dupla szóköz). Azonban azt sem lehet mondani, hogy
     akkor mindegyik ilyennél vágjuk szét, hiszen a “chr.
     veseelégtelenség” az egy betegség (chr = krónikus) nem a “chr” és a
-    “veseelégtelenség” betegségek egymás után felsorolva; a szóközről
-    meg nyilván beszélni is felesleges. Hogy a dolog még rosszabb
-    legyen, a probléma fordítva is fennáll, mert még a vessző sem
-    feltétlenül jó szétvágáshoz, előfordul például “szív-, érrendszeri
-    betegség”. Nehéz megérteni, hogy aki ezt ilyen formában begyűjteti,
-    az hogyan gondolhatja azt, hogy ez később *bármilyen* célra alkalmas
-    lesz (akkor viszont minek begyűjteni?!). A későbbiekben ezt
-    megpróbálom amennyire lehet szövegfeldolgozási eszközökkel megoldni,
-    de megint ugyanaz, hogy komoly munkával igyekszem egy legalább
-    félig-meddig használható formát kicsiholni az adatforrásból, ami
-    azért szükséges, mert az – amúgy is végletesen túlterhelt –
-    kórházaknak és orvosoknak komoly munkát ad, hogy ilyen rossz
-    formátumban közöljenek adatot…
+    “veseelégtelenség” betegségek egymás után felsorolva. Hogy a dolog
+    még rosszabb legyen, a probléma fordítva is fennáll, mert még a
+    vessző sem feltétlenül jó szétvágáshoz, előfordul például “szív-,
+    érrendszeri betegség”. Nehéz megérteni, hogy aki ezt ilyen formában
+    begyűjteti, az hogyan gondolhatja azt, hogy ez később *bármilyen*
+    célra alkalmas lesz (akkor viszont minek begyűjteni?!). A
+    későbbiekben ezt megpróbálom amennyire lehet szövegfeldolgozási
+    eszközökkel megoldni, de megint ugyanaz, hogy komoly munkával
+    igyekszem egy legalább félig-meddig használható formát kicsiholni az
+    adatforrásból, ami azért szükséges, mert az – amúgy is végletesen
+    túlterhelt – kórházaknak és orvosoknak komoly munkát ad, hogy ilyen
+    rossz formátumban közöljenek adatot…
 -   Könnyen megoldható probléma, de azért jellemző adalék, hogy még a
     halottak *nemének* a megadását sem sikerült egységesen
     megoldani… 2021. május 7-i állapot szerint 1524 “Nő” van, 2433 “Nõ”
@@ -847,7 +846,8 @@ Itt is vizsgáljuk meg a kérdést kor- és nemspecifikusan:
 
 ``` r
 ggplot(reshape2::melt(table(MortData$ComorbCount, MortData$Age, MortData$Sex)),
-       aes(x = Var2, fill = forcats::fct_rev(as.factor(Var1)), y = value)) + geom_area(position = "fill", alpha = 0.7) +
+       aes(x = Var2, fill = forcats::fct_rev(as.factor(Var1)), y = value)) +
+  geom_area(position = "fill", alpha = 0.7) +
   facet_grid(cols = vars(Var3)) + scale_x_continuous(expand = c(0, 0), limits = c(50, 90)) +
   scale_y_continuous(labels = scales::percent_format(suffix = ""), expand = c(0, 0)) + 
   labs(x = "Életkor [év]", y = "Arány [%]", fill = "Társbetegségek száma") +
