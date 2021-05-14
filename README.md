@@ -19,22 +19,23 @@ információ stb. stb.; érdemes ezt összevetni egy
 vagy az [angol](https://coronavirus.data.gov.uk/) adatközléssel, de
 sajnos akár a
 [macedónnal](https://gdi-sk.maps.arcgis.com/apps/opsdashboard/index.html#/2096bd4b051b42948ac3f5747e80c3a5)
-adatközléssel is), addig egyetlen egy téren viszont páratlanul
-részletes: ez az elhunytakra vonatkozó adatszolgáltatás. Egyedi adatokat
-közölnek, életkorral, nemmel, és teljes társbetegség listával. Én az
-abszolút élharcosa vagyok a teljes transzparenciának, de ez még
-szerintem is szükségtelen, és nagyon komoly adatvédelmi kérdéseket vet
-fel. (Nagyjából az első ezer halottig foglalkoztam ezzel az aspektussal,
-közülük 4-et tudtam névvel-címmel teljes bizonyossággal beazonosítani
-családi és ismerősi körömből származó információk alapján, és ilyen
-módon megtudni az összes betegségüket. Beleértve mondjuk olyanokat, hogy
-alkoholos májzsugor… Mindeközben arra a kérdésre, hogy a regisztrált
-eseteknek miért nem közlik legalább az életkori eloszlását, mondjuk,
-hogy mennyi eset volt 60 és 70 év között tegnap, az a válasz született a
-hivatalos sajtótájékoztatón, hogy azért, “mert az lekövethetővé tenne
-embereket”. Így!) Viszont ha már egyszer, akármilyen okból is, de ilyen
-részletes adataink vannak, igyekezzünk azt felhasználni a járvány jobb
-megismerésére, megértésére.
+is), addig egyetlen egy téren viszont páratlanul részletes: ez az
+elhunytakra vonatkozó adatszolgáltatás. Egyedi adatokat közölnek,
+életkorral, nemmel, és teljes társbetegség listával. Én az abszolút
+élharcosa vagyok a teljes transzparenciának, de ez még szerintem is
+szükségtelen, és nagyon komoly adatvédelmi kérdéseket vet fel, amiknél
+még szerintem sem biztos, hogy fontosabb ezen információk nyilvános
+megismerése. (Nagyjából az első ezer halottig foglalkoztam ezzel az
+aspektussal, közülük 4-et tudtam névvel-címmel teljes bizonyossággal
+beazonosítani a sajtóból, és családi, ismerősi körömből származó
+információk alapján. És ilyen módon megtudni az összes betegségüket,
+beleértve mondjuk olyanokat, hogy alkoholos májzsugor… Mindeközben arra
+a kérdésre, hogy a regisztrált eseteknek miért nem közlik legalább az
+életkori eloszlását, tehát, hogy mennyi eset volt mondjuk 60 és 70 év
+között tegnap, az a válasz született a hivatalos sajtótájékoztatón, hogy
+azért, “mert az lekövethetővé tenne embereket”. Így!) Viszont ha már
+egyszer, akármilyen okból is, de ilyen részletes adataink vannak,
+igyekezzünk felhasználni azokat járvány jobb megismerésére, megértésére.
 
 ## Limitációk
 
