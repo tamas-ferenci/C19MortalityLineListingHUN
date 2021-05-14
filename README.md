@@ -6,15 +6,15 @@ Ferenci Tamás
 
 A hivatalos magyar járványügyi adatszolgáltatás egyik nehezen érthető
 vonása, hogy míg a legtöbb téren szinte minden információt, még a
-legelemibbeket is visszatartja (kizárólag egy járvány kezdete összegzett
-értéket közöl feldolgozható formában, napi adatot nem, azt is csak a
-fertőzöttek, a halottak és a tesztek számáról, ezen kívül a fertőzöttek
-területi adatait adja meg, egy képfájlban (!), a tesztek típusáról, a
-tesztkapacitásról nincs információ, a kórházba kerülő betegek, az
-elhunytak és a tesztelések területi adatairól nincs információ, a
-fertőzöttek, kórházba kerülők életkoráról, neméről nincs információ, a
-kórházi kapacitásról, a kezelések kimeneti adatairól nincs információ
-stb. stb.; érdemes ezt összevetni egy
+legelemibbeket is visszatartja (kizárólag egy járvány kezdete óta
+összegzett értéket közöl feldolgozható formában, de napi adatot nem, az
+összegzettet is csak a fertőzöttek, a halottak és a tesztek számáról,
+ezen kívül a fertőzöttek területi adatait adja meg, egy képfájlban (!) -
+a tesztek típusáról, a tesztkapacitásról nincs információ, a kórházba
+kerülő betegek, az elhunytak és a tesztelések területi adatairól nincs
+információ, a fertőzöttek, kórházba kerülők életkoráról, neméről nincs
+információ, a kórházi kapacitásról, a kezelések kimeneti adatairól nincs
+információ stb. stb.; érdemes ezt összevetni egy
 [amerikai](https://www.doh.wa.gov/Emergencies/COVID19/DataDashboard)
 vagy az [angol](https://coronavirus.data.gov.uk/) adatközléssel, de
 sajnos akár a
