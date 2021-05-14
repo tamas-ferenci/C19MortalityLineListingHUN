@@ -6,13 +6,17 @@ Ferenci Tamás
 
 A hivatalos magyar járványügyi adatszolgáltatás egyik nehezen érthető
 vonása, hogy míg a legtöbb téren szinte minden információt, még a
-legelemibbeket is visszatartja (az esetek számáról kizárólag egy járvány
-kezdete összegzett értéket közöl feldolgozható formában, a területi
-adatokat egy képfájlban (!) adja meg, amit minden nap lecserélnek, a
-tesztek típusáról semmilyen információt nem ad meg stb. stb., érdemes
-összevetni egy
+legelemibbeket is visszatartja (kizárólag egy járvány kezdete összegzett
+értéket közöl feldolgozható formában, napi adatot nem, azt is csak a
+fertőzöttek, a halottak és a tesztek számáról, ezen kívül a fertőzöttek
+területi adatait adja meg, egy képfájlban (!), a tesztek típusáról, a
+tesztkapacitásról nincs információ, a kórházba kerülő betegek, az
+elhunytak és a tesztelések területi adatairól nincs információ, a
+fertőzöttek, kórházba kerülők életkoráról, neméről nincs információ, a
+kórházi kapacitásról, a kezelések kimeneti adatairól nincs információ
+stb. stb.; érdemes ezt összevetni egy
 [amerikai](https://www.doh.wa.gov/Emergencies/COVID19/DataDashboard)
-vagy egy [angol](https://coronavirus.data.gov.uk/) adatközléssel, de
+vagy az [angol](https://coronavirus.data.gov.uk/) adatközléssel, de
 sajnos akár a
 [macedónnal](https://gdi-sk.maps.arcgis.com/apps/opsdashboard/index.html#/2096bd4b051b42948ac3f5747e80c3a5)
 adatközléssel is), addig egyetlen egy téren viszont páratlanul
@@ -20,16 +24,16 @@ részletes: ez az elhunytakra vonatkozó adatszolgáltatás. Egyedi adatokat
 közölnek, életkorral, nemmel, és teljes társbetegség listával. Én az
 abszolút élharcosa vagyok a teljes transzparenciának, de ez még
 szerintem is szükségtelen, és nagyon komoly adatvédelmi kérdéseket vet
-fel. (Nagyjából az első ezer halottig foglalkoztam ezzel, közülük 4-et
-tudtam névvel-címmel teljes bizonyossággal beazonosítani családi és
-ismerősi körömből származó információk alapján, és ilyen módon megtudni
-az összes betegségüket. Beleértve mondjuk olyanokat, hogy alkoholos
-májzsugor… Mindeközben arra a kérdésre, hogy a regisztrált eseteknek
-miért nem közlik legalább az életkori eloszlását, mondjuk, hogy mennyi
-eset volt 60 és 70 év között tegnap, az a válasz született a hivatalos
-sajtótájékoztatón, hogy azért, “mert az lekövethetővé tenne embereket”.
-Így!) Viszont ha már egyszer, akármilyen okból is, de ilyen részletes
-adataink vannak, igyekezzünk azt felhasználni a járvány jobb
+fel. (Nagyjából az első ezer halottig foglalkoztam ezzel az aspektussal,
+közülük 4-et tudtam névvel-címmel teljes bizonyossággal beazonosítani
+családi és ismerősi körömből származó információk alapján, és ilyen
+módon megtudni az összes betegségüket. Beleértve mondjuk olyanokat, hogy
+alkoholos májzsugor… Mindeközben arra a kérdésre, hogy a regisztrált
+eseteknek miért nem közlik legalább az életkori eloszlását, mondjuk,
+hogy mennyi eset volt 60 és 70 év között tegnap, az a válasz született a
+hivatalos sajtótájékoztatón, hogy azért, “mert az lekövethetővé tenne
+embereket”. Így!) Viszont ha már egyszer, akármilyen okból is, de ilyen
+részletes adataink vannak, igyekezzünk azt felhasználni a járvány jobb
 megismerésére, megértésére.
 
 ## Limitációk
@@ -168,9 +172,9 @@ knitr::kable(table(MortData$Sex), col.names = c("Írásmód", "Gyakoriság"))
 
 | Írásmód | Gyakoriság |
 |:--------|-----------:|
-| férfi   |      10502 |
+| férfi   |      10533 |
 | Férfi   |       4390 |
-| no      |      10121 |
+| no      |      10161 |
 | No      |       2433 |
 | Nő      |       1524 |
 
@@ -214,17 +218,16 @@ saveRDS(MortData, "MortData.rds")
 
 ## Az adatbázis jellemzői
 
-Jelen elemzés lezárásának a dátuma 2021-05-13, ekkor `nrow(MortData)`
-elhunyt volt az adatbázisban, akinek halálozási időpontja is
-beazonosítható volt. Jelen vizsgálat az ő adataik felhasználásával
-készült.
+Jelen elemzés lezárásának a dátuma 2021-05-14, ekkor 28970 elhunyt volt
+az adatbázisban, akinek halálozási időpontja is beazonosítható volt.
+Jelen vizsgálat az ő adataik felhasználásával készült.
 
 ## Az elhunytak életkor és nemi adatai
 
 Kezdjük először a társbetegségeken kívüli két adattal, az életkorral és
 a nemmel.
 
-Az adatbázis szerint az elhunytak közül 14852 fő (51.4%) férfi.
+Az adatbázis szerint az elhunytak közül 14892 fő (51.4%) férfi.
 
 Az életkori eloszlás:
 
@@ -360,7 +363,7 @@ ggplot(temp2, aes(x = Var1, y = Var2, fill = value)) + geom_tile() +
   labs(x = "", y = "Életkor [év]", fill = "")
 ```
 
-    ## Warning: Removed 69112 rows containing missing values (geom_tile).
+    ## Warning: Removed 69700 rows containing missing values (geom_tile).
 
 ![](README_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
 
@@ -397,36 +400,36 @@ knitr::kable(sort(table(unlist(Comorbs)), decreasing = TRUE)[1:50],
 
 | Társbetegség                      | Gyakoriság |
 |:----------------------------------|-----------:|
-| magasvérnyomás-betegség           |      10685 |
-| cukorbetegség                     |       8222 |
-| magas vérnyomás                   |       8109 |
+| magasvérnyomás-betegség           |      10720 |
+| cukorbetegség                     |       8229 |
+| magas vérnyomás                   |       8110 |
 | iszkémiás szívbetegség            |       3012 |
-| szívbetegség                      |       2293 |
-| demencia                          |       1979 |
+| szívbetegség                      |       2306 |
+| demencia                          |       1986 |
 | szívelégtelenség                  |       1522 |
-| krónikus veseelégtelenség         |       1500 |
+| krónikus veseelégtelenség         |       1503 |
 | szívritmuszavar                   |       1321 |
-| veseelégtelenség                  |       1274 |
-| daganatos megbetegedés            |       1269 |
-| tüdobetegség                      |       1170 |
-| érelmeszesedés                    |        902 |
-| vérszegénység                     |        852 |
-| kóros elhízás                     |        818 |
+| daganatos megbetegedés            |       1276 |
+| veseelégtelenség                  |       1275 |
+| tüdobetegség                      |       1177 |
+| érelmeszesedés                    |        903 |
+| vérszegénység                     |        854 |
+| kóros elhízás                     |        823 |
+| nem ismert alapbetegség           |        802 |
 | pitvarfibrilláció                 |        796 |
-| nem ismert alapbetegség           |        775 |
 | asztma                            |        714 |
 | krónikus obstruktív tüdobetegség  |        684 |
-| agyi infarktus                    |        639 |
-| elhízás                           |        637 |
-| parkinson-kór                     |        622 |
+| agyi infarktus                    |        641 |
+| elhízás                           |        639 |
+| parkinson-kór                     |        623 |
 | stroke                            |        612 |
-| pangásos szívelégtelenség         |        528 |
+| pangásos szívelégtelenség         |        529 |
 | adat feltöltés alatt              |        475 |
-| epilepszia                        |        452 |
-| általános érelmeszesedés          |        426 |
-| májbetegség                       |        410 |
+| epilepszia                        |        453 |
+| általános érelmeszesedés          |        427 |
+| májbetegség                       |        412 |
 | érszukület                        |        395 |
-| alzheimer-kór                     |        341 |
+| alzheimer-kór                     |        342 |
 | csontritkulás                     |        324 |
 | reflux                            |        311 |
 | depresszió                        |        292 |
@@ -438,8 +441,8 @@ knitr::kable(sort(table(unlist(Comorbs)), decreasing = TRUE)[1:50],
 | magas vérzsírszint                |        229 |
 | tüdogyulladás                     |        221 |
 | pajzsmirigy alulmuködés           |        215 |
+| szív- és érrendszeri betegség     |        192 |
 | szív- és érrendszeri megbetegedés |        190 |
-| szív- és érrendszeri betegség     |        189 |
 | tüdoembólia                       |        176 |
 | idült iszkémiás szívbetegség      |        161 |
 | krónikus tüdobetegség             |        161 |
@@ -519,7 +522,7 @@ res <- lapply(unique(h), function(x) IndivComorbNames[h==x])
 resDF <- as.data.table(plyr::ldply(res, rbind))
 ```
 
-Ezzel lényegében véletlenszerűen kapjuk meg a halmazokat. Összesen 2966
+Ezzel lényegében véletlenszerűen kapjuk meg a halmazokat. Összesen 2968
 halmazunk keletkezett. Az egyes halmazok tartalmát jól megadja az első
 elemük (az első oszlop), mert az mindenképp létezik. Nézzük meg az első
 20-at, nem feledve, hogy itt az “első” semmiféle érdemi sorrendet nem
