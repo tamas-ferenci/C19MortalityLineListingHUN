@@ -25,7 +25,7 @@ vonása, hogy míg a legtöbb téren szinte minden információt, még a
 legelemibbeket is visszatartja (kizárólag egy járvány kezdete óta
 összegzett értéket közöl feldolgozható formában, de napi adatot nem, az
 összegzettet is csak a fertőzöttek, a halottak és a tesztek számáról,
-ezen kívül a fertőzöttek területi adatait adja meg, egy képfájlban (!) -
+ezen kívül a fertőzöttek területi adatait adja meg, egy képfájlban (!) –
 a tesztek típusáról, a tesztkapacitásról nincs információ, a kórházba
 kerülő betegek, az elhunytak és a tesztelések területi adatairól nincs
 információ, a fertőzöttek, kórházba kerülők életkoráról, neméről nincs
@@ -50,8 +50,9 @@ a kérdésre, hogy a regisztrált eseteknek miért nem közlik legalább az
 életkori eloszlását, tehát, hogy mennyi eset volt mondjuk 60 és 70 év
 között tegnap, az a válasz született a hivatalos sajtótájékoztatón, hogy
 azért, “mert az lekövethetővé tenne embereket”. Így!) Viszont ha már
-egyszer, akármilyen okból is, de ilyen részletes adataink vannak,
-igyekezzünk felhasználni azokat járvány jobb megismerésére, megértésére.
+egyszer, akármilyen okból is és csak ezen az egyetlen egy téren, de
+ilyen részletes adataink vannak, igyekezzünk legalább ezeket
+felhasználni a járvány jobb megismerésére, megértésére.
 
 ## Limitációk
 
@@ -109,7 +110,14 @@ ezek a következők:
     igyekszem egy legalább félig-meddig használható formát kicsiholni az
     adatforrásból, ami azért szükséges, mert az – amúgy is végletesen
     túlterhelt – kórházaknak és orvosoknak komoly munkát ad, hogy ilyen
-    rossz formátumban közöljenek adatot…
+    rossz formátumban közöljenek adatot… Arra meg gondolni sem merek,
+    hogy abból indultak ki, hogy miután iszonyatos munkát adtak az
+    orvosoknak, hogy standard helyett nem standardizált formában gyűjtik
+    az adatokat, utána újra iszonyatos munkát adnak, hogy végigolvassák
+    mind a 30 ezer beteg adatait, hogy a nem standard formát kézzel
+    visszaírják standardra. Márpedig a kézi kikódoláson kívül más
+    lehetőséget nem látok az adatok teljeskörű feldolgozására; ki is fog
+    derülni a későbbiekben, hogy miért.
 -   Könnyen megoldható probléma, de azért jellemző adalék, hogy még a
     halottak *nemének* a megadását sem sikerült egységesen
     megoldani… 2021. május 7-i állapot szerint 1524 “Nő” van, 2433 “Nõ”
@@ -256,7 +264,7 @@ ggplot(MortData, aes(x = Age)) + stat_density(geom = "line", position = "identit
 ![](README_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
 
 (Csábító lenne kiszámítani a korspecifikus halálozási arányt, de ne
-feledjük, hogy nem tudhatjuk, hogy az átfertőzöttség függ-e az
+feledjük, hogy nem tudhatjuk, hogy az átfertőzöttség hogyan függ az
 életkortól.)
 
 Az elhunytak életkori eloszlása nem szerint:
@@ -823,9 +831,9 @@ ggplot(merge(melt(MortData,  measure.vars = ComorbLabels$variable), ComorbLabels
 
 ![](README_files/figure-gfm/unnamed-chunk-35-1.png)<!-- -->
 
-Érdekes kérdés lehet, hogy ez hogyan néz ki életkoronként és nemenként.
-Az életkort (természetesen!) folytonos változóként kezeljük, és
-megengedjük, hogy az életkori mintázat eltérjen nemenként (azaz, hogy
+Érdekes – és fontos – kérdés, hogy ez hogyan néz ki életkoronként és
+nemenként. Az életkort (természetesen!) folytonos változóként kezeljük,
+és megengedjük, hogy az életkori mintázat eltérjen nemenként (azaz, hogy
 interakció legyen a két változó között). A megfelelő eszköz ehhez a
 spline-regresszió (GAM), amit az `mgcv` csomaggal fogunk megvalósítani,
 mind a 11 társbetegségre külön-külön:
@@ -917,17 +925,17 @@ a következő szempontokra muszáj felhívni a figyelmet:
     könnyen lehet, hogy az elhunytak és a nem elhunytak egyéb
     jellemzőikben is eltérnek, nem csak a vizsgált társbetegségben
     szenvedésben, így ha találunk is különbséget, nem tudhatjuk
-    biztosan, hogy az tényleg a társbetegség, és nem az egyéb különbség
-    miatt van. A fenti elemzés két fontos szempont figyelembevételét
-    teszi lehetővé: az életkorét és a nemét. Magyarán, nem azt kell
-    kivenni az adatbázisból, hogy összességében mekkora arány szenved
-    egy adott társbetegségben, hanem azt, hogy ez adott életkorban és
-    nemben mennyi, és hasonlóan, ezt nem az országos összadathoz, hanem
-    adott életkor és nem adatához kell hasonlítani. Így legalább az
-    életkor és a nem esetleges zavaró hatásától meg tudunk szabadulni.
-    (Ezért félrevezető egy olyan elemzés, ami ezt a kettőt nem veszi
-    figyelembe! Persze még ez is rossz lehet, ha az életkoron és a nemen
-    túl vannak további zavaró tényezők.)
+    biztosan, hogy az tényleg a társbetegség, és nem az egyéb
+    különbség(ek) miatt van. A fenti elemzés két fontos szempont
+    figyelembevételét teszi lehetővé: az életkorét és a nemét. Magyarán,
+    nem azt kell kivenni az adatbázisból, hogy összességében mekkora
+    arány szenved egy adott társbetegségben, hanem azt, hogy ez adott
+    életkorban és nemben mennyi, és hasonlóan, ezt nem az országos
+    összadathoz, hanem adott életkor és nem adatához kell hasonlítani.
+    Így legalább az életkor és a nem esetleges zavaró hatásától meg
+    tudunk szabadulni. (Ezért félrevezető egy olyan elemzés, ami ezt a
+    kettőt nem veszi figyelembe. Persze még ez is rossz lehet, ha az
+    életkoron és a nemen túl vannak további zavaró tényezők.)
 -   Vegyük azt is figyelembe, hogy az is számít, hogy adott betegséggel
     mennyi időt töltenek el az emberek. Rosszindulatú daganattal sajnos
     sokszor csak hónapokat, legfeljebb néhány évet, míg magas
