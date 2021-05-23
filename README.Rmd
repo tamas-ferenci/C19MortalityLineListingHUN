@@ -1,7 +1,10 @@
 ---
 title: "A magyarországi regisztrált koronavírusos halottak adatainak elemzése"
 author: "Ferenci Tamás"
-output: github_document
+output:
+  github_document:
+    toc: true
+    toc_depth: 2
 ---
 
 ```{r setup, include=FALSE}
@@ -397,6 +400,15 @@ ggplot(reshape2::melt(table(MortData$ComorbCount, MortData$Age, MortData$Sex)),
   guides(fill = guide_legend(reverse = TRUE)) +
   theme(legend.position = "bottom", legend.title = element_blank(), panel.spacing = unit(1, "lines"))
 ```
+
+## Az eredmények értelmezése, következtetések
+
+Az egyik legtermészetesebb kérdés, amire sokan választ szeretnének kapni, hogy melyik társbetegség növeli meg (és mennyire) a koronavírusban történő elhalálozás kockázatát. A kérdés valóban nagyon fontos, azonban ha a fenti adatok alapján akarnánk rá válaszolni, akkor a következő szempontokra muszáj felhívni a figyelmet:
+
+- A fenti százalékok önmagukban semmit nem jelentenek. Simán lehet, hogy egy társbetegség, ami az elhunytak 20%-ában van jelen, növeli a kockázatot, és egy olyan, ami 40%-ában, csökkenti. Miért? Mert nem tudjuk, hogy a társbetegség a _nem elhunytak_ mekkora százalékában volt jelen! A "növelni" szó csak összehasonlításban értelmezhető -- növelni csak valamihez _képest_ lehet egy adott értéket. Azaz: a fenti százalékok csak úgy jelentenek bármit is, ha tudnánk, hogy az összlakosságban mekkora a társbetegség elterjedtsége. Az, hogy valami az elhunytak 40%-ában van jelen, bár ijesztőnek hangozhat, semmit nem jelent: ha az összlakosságnak 30%-ában, akkor tényleg kockázati tényező, ha 40%-ában, akkor semmi jelentősége, ha 50%-ában, akkor még védőhatású is a jelen járványban történő halálozás szempontjából! Önmagában a 40% mindhárom lehetőséggel kompatibilis!
+- A fenti probléma mélyebb oka, hogy az itt látott százalékok (az elhunytak mekkora része szenved adott betegségben) bármilyen természetesnek is tűnnek, valójában egy teljesen természetellenes kérdésre válaszolnak. Ezek ugyanis azt mondják meg, hogy feltéve, hogy meghal valaki, mekkora valószínűséggel szenvedett egy adott betegségben -- holott a gyakorlatban teljesen nyilvánvalóan pont a fordítottja a releváns kérdés, ha valaki szenved egy adott betegségben, mekkora valószínűséggel hal meg! A kettő azonban nagyon nem ugyanaz, épp az előző pontban írtak miatt. Ez lényegében ugyanaz a kérdés, amit az [orvosi tesztekről szóló írásomban](https://github.com/tamas-ferenci/OrvosiSzures) körbejártam.
+- Valójában még ez az egyszerű összehasonlítás sem korrekt. Hiszen könnyen lehet, hogy az elhunytak és a nem elhunytak egyéb jellemzőikben is eltérnek, nem csak a vizsgált társbetegségben szenvedésben, így ha találunk is különbséget, nem tudhatjuk biztosan, hogy az tényleg a társbetegség, és nem az egyéb különbség miatt van. A fenti elemzés két fontos szempont figyelembevételét teszi lehetővé: az életkorét és a nemét. Magyarán, nem azt kell kivenni az adatbázisból, hogy összességében mekkora arány szenved egy adott társbetegségben, hanem azt, hogy ez adott életkorban és nemben mennyi, és hasonlóan, ezt nem az országos összadathoz, hanem adott életkor és nem adatához kell hasonlítani. Így legalább az életkor és a nem esetleges zavaró hatásától meg tudunk szabadulni. (Ezért félrevezető egy olyan elemzés, ami ezt a kettőt nem veszi figyelembe! Persze még ez is rossz lehet, ha az életkoron és a nemen túl vannak további zavaró tényezők.)
+- Vegyük azt is figyelembe, hogy az is számít, hogy adott betegséggel mennyi időt töltenek el az emberek. Rosszindulatú daganattal sajnos sokszor csak hónapokat, legfeljebb néhány évet, míg magas vérnyomással minden további nélkül lehet sok évtizedet. Ez azért fontos, mert így természetesen annak is sokkal nagyobb lesz az esélye, hogy valaki magas vérnyomásos, miközben elkapja a koronavírust és meghal, míg egy ráknál erre rövidebb az "időablak". Tehát nem az számít, hogy az emberek mekkora része hal bele egy betegségbe, hanem, hogy mennyi a vele töltött átlagos idő.
 
 ## Továbbfejlesztési ötletek
 
