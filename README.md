@@ -4,19 +4,31 @@ Ferenci Tamás
 
 -   [Bevezető gondolatok](#bevezető-gondolatok)
 -   [Limitációk](#limitációk)
--   [Technikai részletek: az adatok
-    letöltése](#technikai-részletek-az-adatok-letöltése)
+-   [Technikai részletek](#technikai-részletek)
+    -   [Az adatok letöltése](#az-adatok-letöltése)
+    -   [A társbetegségek elvileg teljeskörű
+        kikódolása](#a-társbetegségek-elvileg-teljeskörű-kikódolása)
+    -   [A társbetegségek célszerű
+        kikódolása](#a-társbetegségek-célszerű-kikódolása)
 -   [Az adatbázis jellemzői](#az-adatbázis-jellemzői)
 -   [Az elhunytak életkor és nemi
     adatai](#az-elhunytak-életkor-és-nemi-adatai)
--   [Technikai részletek: a társbetegségek
-    kikódolása](#technikai-részletek-a-társbetegségek-kikódolása)
--   [Technikai részletek: a társbetegségek célszerű
-    kikódolása](#technikai-részletek-a-társbetegségek-célszerű-kikódolása)
--   [Az elhunytak társbetegségei](#az-elhunytak-társbetegségei)
--   [Az eredmények értelmezése,
-    következtetések](#az-eredmények-értelmezése-következtetések)
+    -   [Technikai részletek](#technikai-részletek-1)
+    -   [Eredmények](#eredmények)
+    -   [Értelmezés, következtetések,
+        limitációk](#értelmezés-következtetések-limitációk)
+-   [Az elhunytak társbetegségei külön-külön
+    vizsgálva](#az-elhunytak-társbetegségei-külön-külön-vizsgálva)
+    -   [Technikai részletek](#technikai-részletek-2)
+    -   [Eredmények](#eredmények-1)
+    -   [Értelmezés, következtetések,
+        limitációk](#értelmezés-következtetések-limitációk-1)
+-   [Társbetegségek kombinációi](#társbetegségek-kombinációi)
+    -   [Technikai részletek](#technikai-részletek-3)
+    -   [Eredmények](#eredmények-2)
 -   [Továbbfejlesztési ötletek](#továbbfejlesztési-ötletek)
+-   [Köszönetnyilvánítás](#köszönetnyilvánítás)
+-   [Irodalmi hivatkozások](#irodalmi-hivatkozások)
 
 ## Bevezető gondolatok
 
@@ -149,7 +161,9 @@ ezek a következők:
     adatokat, és a webes megjelenítést 50-esével tördeli, hogy még
     kézzel kimásolni se lehessen az adatokat.
 
-## Technikai részletek: az adatok letöltése
+## Technikai részletek
+
+### Az adatok letöltése
 
 Az adatok leszedésére, mint az előbb is láttuk, csak gépi úton van
 remény. Természetesen az `rvest` csomagot fogjuk használni, mely az
@@ -197,10 +211,10 @@ knitr::kable(table(MortData$Sex), col.names = c("Írásmód", "Gyakoriság"))
 
 | Írásmód | Gyakoriság |
 |:--------|-----------:|
-| férfi   |      10765 |
-| Férfi   |       4411 |
-| no      |      10363 |
-| No      |       2456 |
+| férfi   |      10826 |
+| Férfi   |       4431 |
+| no      |      10424 |
+| No      |       2477 |
 | Nő      |       1524 |
 
 Nem túlságosan, úgyhogy ezt javítsuk ki:
@@ -241,158 +255,7 @@ kivárni:
 saveRDS(MortData, "MortData.rds")
 ```
 
-## Az adatbázis jellemzői
-
-Jelen elemzés lezárásának a dátuma 2021-05-23, ekkor 29475 elhunyt volt
-az adatbázisban, akinek halálozási időpontja is beazonosítható volt.
-Jelen vizsgálat az ő adataik felhasználásával készült.
-
-## Az elhunytak életkor és nemi adatai
-
-Kezdjük először a társbetegségeken kívüli két adattal, az életkorral és
-a nemmel.
-
-Az adatbázis szerint az elhunytak közül 15155 fő (51.4%) férfi.
-
-Az életkori eloszlás:
-
-``` r
-ggplot(MortData, aes(x = Age)) + stat_density(geom = "line", position = "identity") +
-  labs(x = "Életkor [év]", y = "")
-```
-
-![](README_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
-
-(Csábító lenne kiszámítani a korspecifikus halálozási arányt, de ne
-feledjük, hogy nem tudhatjuk, hogy az átfertőzöttség hogyan függ az
-életkortól.)
-
-Az elhunytak életkori eloszlása nem szerint:
-
-``` r
-ggplot(MortData, aes(x = Age, color = Sex)) + stat_density(geom = "line", position = "identity") +
-  labs(x = "Életkor [év]", y = "") + theme(legend.position = "bottom", legend.title = element_blank())
-```
-
-![](README_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
-
-(Ez az ábra a csoporton belüli eloszlást mutatja, tehát nem jeleníti
-meg, hogy a férfiak és nők száma nem ugyanannyi.)
-
-Ez annyiban félrevezető, hogy egybeönti az egész időszak adatait, pedig
-ezek változhattak menet közben. Márpedig fontos lehet ezt is vizsgálni,
-hátha eltolódik valamilyen irányba az elhunytak életkora! A férfiak és a
-nők között nem volt nagy különbség, úgyhogy a továbbiakhoz kezeljük őket
-egyben, viszont a kérdés vizsgálatához bontsuk meg az ábrát a dátum
-szerint.
-
-Elvileg minden naphoz egy ilyen eloszlást lehetne rajzolni, de ezt
-hogyan jelenítsük meg átláthatóan? A megoldás, hogy a harmadik dimenzió
-(az előbbi ábrán a függőleges tengely, tehát, hogy mennyire gyakori egy
-adott életkor) ábrázolására színt fogunk használni. Így egy kétdimenziós
-ábrát kapunk, egyik tengelyen az idő, másik tengelyen az életkor, és a
-színezés jelzi, hogy adott időpontban adott életkor milyen gyakori.
-Természetesen ezt nem lehet szó szerint naponként végezni, részint mert
-lesznek napok, amikor nagyon kevés halálozás volt, ebből csak
-bizonytalanul lehet becsülni életkori eloszlást, de még ha sok halott
-van, akkor is érdemes a szomszéd napokat is használni, hogy javítsuk a
-becslést, hiszen hirtelen változások nem valószínűek. Azaz amire
-szükségünk van egy simítás, jelen esetben kétdimenziósan; ezt a
-`MASS::kde2d`-vel fogjuk megoldani. (A `geom_density` is ezt használja.)
-Arra vigyáznunk kell, hogy ez dátumot nem tud kezelni, úgyhogy először
-numerikussá alakítjuk – ez szerencsére egyszerűen naponként fog nőni
-egyesével – és majd a végén nem szabad elfelejtenünk visszaalakítani.
-Egy technikai trükk, de érdemes a simítási sűrűséget úgy beállítani,
-hogy a pontok száma épp a napok száma legyen (ez szép ábrázoláshoz bőven
-elég), és így egész dátumokban fogjuk megkapni a sűrűséget.
-
-``` r
-MortData$NumDate <- as.numeric(MortData$Date)
-temp <- MASS::kde2d(MortData$NumDate, MortData$Age, n = diff(range(MortData$NumDate))+1)
-rownames(temp$z) <- temp$x
-colnames(temp$z) <- temp$y
-temp1 <- reshape2::melt(temp$z)
-temp1$Var1 <- as.Date(temp1$Var1, origin = "1970-01-01")
-```
-
-(Megjegyzés: sokszor látni, hogy simítás helyett úgy oldják meg a
-problémát, hogy több napot és/vagy több életkort összevonnak, például
-havonta és 10 éves korcsoportokban dolgoznak. Ez helytelen, hiszen
-információvesztéssel jár – elveszítjük a hónapon belüli és a 10 év
-széles tartományon belüli mintázatot –, nem lehet jól megválasztani a
-csoportosítást – miért pont hónap és nem 3 hét vagy 38 nap, miért pont
-10 év és nem 9 vagy 11 – valamint azt feltételezi, hogy a csoportonként
-belül állandó a sűrűség, míg a határán abrupt módon ugrik, aminek
-nyilván nincs biológiai értelme. A korszerű és megfelelő eszköz az, ha a
-folytonos változókat folytonosként kezeljük.)
-
-Ábrázoljuk az eredményt, minél fehérebb a szín, annál nagyobb ott a
-sűrűség, minél sötét:
-
-``` r
-ggplot(temp1, aes(x = Var1, y = Var2, fill = value)) + geom_tile() +
-  scale_fill_distiller(palette = 'YlOrRd') + scale_x_date(date_breaks = "month", date_labels = "%b") +
-  labs(x = "", y = "Életkor [év]", fill = "")
-```
-
-![](README_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
-
-Nem túl látványos amit kaptunk, ennek az az oka, hogy egyben van simítva
-az egész adatsor, így a kiugró halálozási napok magas sűrűsége annyira
-összenyomja a színskálát, hogy ezen kívül szinte minden
-megkülönböztethetetlenné válik. Ezen segíthetünk, ha nem lineárisan
-színezünk:
-
-``` r
-ggplot(temp1, aes(x = Var1, y = Var2, fill = value)) + geom_tile() +
-  scale_fill_distiller(palette = 'YlOrRd', trans = "sqrt") +
-  scale_x_date(date_breaks = "month", date_labels = "%b") + labs(x = "", y = "Életkor [év]", fill = "")
-```
-
-![](README_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
-
-(Ez négyzetgyök-transzformációval készült; a nagyon extrém alacsony
-értékek miatt érdekes módon a logaritmus még annál is rosszabb eredményt
-ad, mint a kiindulási ábra)
-
-Az igazi megoldás azonban az, ha kiszámoljuk adott napra a *feltételes*
-eloszlást, tehát hogy a napon *belül* milyen volt az életkorok
-eloszlása. Ezt kézzel megtehetjük könnyen:
-
-``` r
-temp2 <- as.data.table(reshape2::melt(t(apply(temp$z, 1, function(x) x/sum(x)))))
-temp2$Var1 <- as.Date(temp2$Var1, origin = "1970-01-01")
-```
-
-És ezt ábrázolva megkapjuk a megfelelő végeredményt:
-
-``` r
-ggplot(temp2, aes(x = Var1, y = Var2, fill = value)) + geom_tile() +
-  scale_fill_distiller(palette = 'YlOrRd') + scale_x_date(date_breaks = "month", date_labels = "%b") +
-  labs(x = "", y = "Életkor [év]", fill = "")
-```
-
-![](README_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
-
-Látványosabbá tehetjük az eredményt, ha feltüntetjük az átlagos életkort
-(mivel nagyon finom felbontásban megvan az eloszlást, ezt könnyen
-kiszámolhatjuk, lényegében numerikusan integrálunk), illetve ábrázoljuk
-csak a relevánsabb életkortartományt:
-
-``` r
-ggplot(temp2, aes(x = Var1, y = Var2, fill = value)) + geom_tile() +
-  scale_fill_distiller(palette = 'YlOrRd') +
-  geom_line(data = temp2[,.(weighted.mean(Var2, value)), .(Var1)], aes(x = Var1, y = V1),
-            inherit.aes = FALSE, color = "white") +
-  lims(y = c(40, NA)) + scale_x_date(date_breaks = "month", date_labels = "%b") +
-  labs(x = "", y = "Életkor [év]", fill = "")
-```
-
-    ## Warning: Removed 72478 rows containing missing values (geom_tile).
-
-![](README_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
-
-## Technikai részletek: a társbetegségek kikódolása
+### A társbetegségek elvileg teljeskörű kikódolása
 
 Elsőként próbáljuk meg elkülöníteni egy elhunyt listáján belül a
 különböző társbetegségeket. Ehhez muszáj kicsit kézzel is küzdeni, hogy
@@ -425,56 +288,56 @@ knitr::kable(sort(table(unlist(Comorbs)), decreasing = TRUE)[1:50],
 
 | Társbetegség                      | Gyakoriság |
 |:----------------------------------|-----------:|
-| magasvérnyomás-betegség           |      10991 |
-| cukorbetegség                     |       8346 |
-| magas vérnyomás                   |       8140 |
-| iszkémiás szívbetegség            |       3055 |
-| szívbetegség                      |       2341 |
-| demencia                          |       2010 |
-| szívelégtelenség                  |       1545 |
-| krónikus veseelégtelenség         |       1528 |
-| szívritmuszavar                   |       1346 |
-| daganatos megbetegedés            |       1320 |
-| veseelégtelenség                  |       1293 |
-| tüdobetegség                      |       1199 |
+| magasvérnyomás-betegség           |      11106 |
+| cukorbetegség                     |       8388 |
+| magas vérnyomás                   |       8142 |
+| iszkémiás szívbetegség            |       3060 |
+| szívbetegség                      |       2383 |
+| demencia                          |       2020 |
+| szívelégtelenség                  |       1549 |
+| krónikus veseelégtelenség         |       1534 |
+| szívritmuszavar                   |       1361 |
+| daganatos megbetegedés            |       1332 |
+| veseelégtelenség                  |       1305 |
+| tüdobetegség                      |       1210 |
 | érelmeszesedés                    |        914 |
-| vérszegénység                     |        871 |
-| kóros elhízás                     |        844 |
-| nem ismert alapbetegség           |        836 |
-| pitvarfibrilláció                 |        805 |
-| asztma                            |        730 |
+| vérszegénység                     |        883 |
+| kóros elhízás                     |        852 |
+| nem ismert alapbetegség           |        850 |
+| pitvarfibrilláció                 |        806 |
+| asztma                            |        732 |
 | krónikus obstruktív tüdobetegség  |        691 |
-| elhízás                           |        653 |
-| agyi infarktus                    |        646 |
-| parkinson-kór                     |        630 |
+| elhízás                           |        662 |
+| agyi infarktus                    |        649 |
+| parkinson-kór                     |        636 |
 | stroke                            |        622 |
-| pangásos szívelégtelenség         |        537 |
+| pangásos szívelégtelenség         |        540 |
 | adat feltöltés alatt              |        476 |
-| epilepszia                        |        456 |
-| általános érelmeszesedés          |        438 |
-| májbetegség                       |        413 |
-| érszukület                        |        400 |
+| epilepszia                        |        460 |
+| általános érelmeszesedés          |        441 |
+| májbetegség                       |        417 |
+| érszukület                        |        403 |
 | alzheimer-kór                     |        343 |
-| csontritkulás                     |        325 |
-| reflux                            |        314 |
-| depresszió                        |        299 |
+| csontritkulás                     |        328 |
+| reflux                            |        316 |
+| depresszió                        |        300 |
+| pajzsmirigybetegség               |        265 |
 | magasvérnyomás betegség           |        260 |
-| pajzsmirigybetegség               |        260 |
-| daganatos betegség                |        253 |
-| vesebetegség                      |        250 |
+| vesebetegség                      |        259 |
+| daganatos betegség                |        256 |
 | pajzsmirigy betegség              |        235 |
 | magas vérzsírszint                |        231 |
 | tüdogyulladás                     |        221 |
 | pajzsmirigy alulmuködés           |        217 |
-| szív- és érrendszeri betegség     |        205 |
-| szív- és érrendszeri megbetegedés |        193 |
+| szív- és érrendszeri betegség     |        208 |
+| szív- és érrendszeri megbetegedés |        194 |
 | tüdoembólia                       |        178 |
 | krónikus tüdobetegség             |        164 |
 | idült iszkémiás szívbetegség      |        162 |
 | köszvény                          |        157 |
-| szívinfarktus                     |        151 |
+| szívinfarktus                     |        152 |
+| agysorvadás                       |        146 |
 | agykárosodás                      |        145 |
-| agysorvadás                       |        145 |
 
 Szedjük ki az egyedi neveket:
 
@@ -547,7 +410,7 @@ res <- lapply(unique(h), function(x) IndivComorbNames[h==x])
 resDF <- as.data.table(plyr::ldply(res, rbind))
 ```
 
-Ezzel lényegében véletlenszerűen kapjuk meg a halmazokat. Összesen 2982
+Ezzel lényegében véletlenszerűen kapjuk meg a halmazokat. Összesen 2988
 halmazunk keletkezett. Az egyes halmazok tartalmát jól megadja az első
 elemük (az első oszlop), mert az mindenképp létezik. Nézzük meg az első
 20-at, nem feledve, hogy itt az “első” semmiféle érdemi sorrendet nem
@@ -683,17 +546,27 @@ Nagyon fontos: természetesen mindez *semmit* nem segít a rövidítéseken
 gépi úton észrevenni, hogy a cukorbetegség ugyanaz mint a diabetes és
 hogy az ugyanaz mint a T1DM, ami pedig ugyanaz mint az IDDM).
 
-## Technikai részletek: a társbetegségek célszerű kikódolása
+Teljeskörű kikódolásra tehát – egy esetleges végigolvasástól és kézi
+kikódolástól eltekintve – nincs reális lehetőség az általam ismert
+módszerekkel.
 
-A fenti pont rávetít arra, hogy a jelen feldolgozottsági fokon az
-egyetlen többé-kevésbé megbízható megoldás társbetegségek azonosítására
-az, ha nem foglalkozunk a tagolásukkal (csak annyi információt akarunk
-kiszedni, hogy adott elhunytnak volt-e vagy sem), és a kereséshez olyan
-kifejezéseket használunk, melyek: 1) a lehető legrövidebbek, miközben
-elég specifikusak (hogy az elgépelések ellen próbáljunk védekezni) és 2)
-a lehető legtöbb ilyet kapcsolunk össze vagylagosan, orvosi tudást is
-felhasználva (pl. latin írásmód, bevett rövidítések), hogy minden
-előfordulást megpróbáljunk detektálni.
+### A társbetegségek célszerű kikódolása
+
+A teljeskörű kikódolással szemben az egyetlen, véleményem szerint reális
+célkitűzés ha fordítva támadunk: nem az adatokból próbáljuk a
+betegségeket kikeresni, hanem konkrét betegségeket keresünk az
+adatokban. Ezzel természetesen komplettül fel kell adnunk a
+teljeskörűséget, hiszen így csak az általunk megadott betegségeket van
+reményünk megtalálni (és ezek száma vélhetően nem lehet túl nagy).
+
+Az egyetlen többé-kevésbé megbízható megoldás társbetegségek
+azonosítására az, ha nem foglalkozunk a tagolásukkal (csak annyi
+információt akarunk kiszedni, hogy adott elhunytnak volt-e vagy sem), és
+a kereséshez olyan kifejezéseket használunk, melyek: 1) a lehető
+legrövidebbek, miközben elég specifikusak (hogy az elgépelések ellen
+próbáljunk védekezni) és 2) a lehető legtöbb ilyet kapcsolunk össze
+vagylagosan, orvosi tudást is felhasználva (pl. latin írásmód, bevett
+rövidítések), hogy minden előfordulást megpróbáljunk detektálni.
 
 Hogy növeljük a hibaállóságot, az ékezetektől megszabadulunk
 (természetesen ezt majd a keresőkifejezésekben is figyelembe kell
@@ -815,7 +688,283 @@ ComorbLabels <- data.table(variable = c("atr_fib", "cancer", "copd", "demen", "d
                                         "Krónikus májbetegség", "Stroke"))
 ```
 
-## Az elhunytak társbetegségei
+## Az adatbázis jellemzői
+
+Jelen elemzés lezárásának a dátuma 2021-05-29, ekkor 29654 elhunyt volt
+az adatbázisban, akinek halálozási időpontja is beazonosítható volt.
+Jelen vizsgálat az ő adataik felhasználásával készült.
+
+## Az elhunytak életkor és nemi adatai
+
+Kezdjük vizsgálatainkat először a társbetegségeken kívüli két adattal,
+az életkorral és a nemmel.
+
+### Technikai részletek
+
+Bővebb magyarázatot az életkor időben változó eloszlásának vizsgálata
+igényel.
+
+Elvileg minden naphoz egy ilyen eloszlást lehetne rajzolni, de ezt
+hogyan jelenítsük meg átláthatóan? A megoldás, hogy a harmadik dimenzió
+(a sűrűségfüggvény értéke, szokásos ábrázoláson a függőleges tengely,
+tehát, hogy mennyire gyakori egy adott életkor) ábrázolására színt
+fogunk használni. Így egy kétdimenziós ábrát kapunk, egyik tengelyen az
+idő, másik tengelyen az életkor, és a színezés jelzi, hogy adott
+időpontban adott életkor milyen gyakori. Természetesen ezt nem lehet szó
+szerint naponként végezni, részint mert lesznek napok, amikor nagyon
+kevés halálozás volt, ebből csak bizonytalanul lehet becsülni életkori
+eloszlást, de még ha sok halott van, akkor is érdemes a szomszéd napokat
+is használni, hogy javítsuk a becslést, hiszen hirtelen változások nem
+valószínűek. Azaz amire szükségünk van egy simítás, jelen esetben
+kétdimenziósan; ezt a `MASS::kde2d`-vel fogjuk megoldani. (A
+`geom_density` is ezt használja.) Arra vigyáznunk kell, hogy ez dátumot
+nem tud kezelni, úgyhogy először numerikussá alakítjuk – ez szerencsére
+egyszerűen naponként fog nőni egyesével – és majd a végén nem szabad
+elfelejtenünk visszaalakítani. Egy technikai trükk, de érdemes a
+simítási sűrűséget úgy beállítani, hogy a pontok száma épp a napok száma
+legyen (ez szép ábrázoláshoz bőven elég), és így egész dátumokban fogjuk
+megkapni a sűrűséget.
+
+``` r
+MortData$NumDate <- as.numeric(MortData$Date)
+temp <- MASS::kde2d(MortData$NumDate, MortData$Age, n = diff(range(MortData$NumDate))+1)
+rownames(temp$z) <- temp$x
+colnames(temp$z) <- temp$y
+temp1 <- reshape2::melt(temp$z)
+temp1$Var1 <- as.Date(temp1$Var1, origin = "1970-01-01")
+```
+
+(Megjegyzés: sokszor látni, hogy simítás helyett úgy oldják meg a
+problémát, hogy több napot és/vagy több életkort összevonnak, például
+havonta és 10 éves korcsoportokban dolgoznak. Ez helytelen, hiszen
+információvesztéssel jár – elveszítjük a hónapon belüli és a 10 év
+széles tartományon belüli mintázatot –, nem lehet jól megválasztani a
+csoportosítást – miért pont hónap és nem 3 hét vagy 38 nap, miért pont
+10 év és nem 9 vagy 11 – valamint azt feltételezi, hogy a csoportonként
+belül állandó a sűrűség, míg a határán abrupt módon ugrik, aminek
+nyilván nincs biológiai értelme. A korszerű és megfelelő eszköz az, ha a
+folytonos változókat folytonosként kezeljük.)
+
+Ábrázoljuk az eredményt, minél fehérebb a szín, annál nagyobb ott a
+sűrűség, minél sötét:
+
+``` r
+ggplot(temp1, aes(x = Var1, y = Var2, fill = value)) + geom_tile() +
+  scale_fill_distiller(palette = 'YlOrRd') + scale_x_date(date_breaks = "month", date_labels = "%b") +
+  labs(x = "", y = "Életkor [év]", fill = "")
+```
+
+![](README_files/figure-gfm/unnamed-chunk-28-1.png)<!-- -->
+
+Nem túl látványos amit kaptunk, ennek az az oka, hogy egyben van simítva
+az egész adatsor, így a kiugró halálozási napok magas sűrűsége annyira
+összenyomja a színskálát, hogy ezen kívül szinte minden
+megkülönböztethetetlenné válik. Ezen segíthetünk, ha nem lineárisan
+színezünk:
+
+``` r
+ggplot(temp1, aes(x = Var1, y = Var2, fill = value)) + geom_tile() +
+  scale_fill_distiller(palette = 'YlOrRd', trans = "sqrt") +
+  scale_x_date(date_breaks = "month", date_labels = "%b") + labs(x = "", y = "Életkor [év]", fill = "")
+```
+
+![](README_files/figure-gfm/unnamed-chunk-29-1.png)<!-- -->
+
+(Ez négyzetgyök-transzformációval készült; a nagyon extrém alacsony
+értékek miatt érdekes módon a logaritmus még annál is rosszabb eredményt
+ad, mint a kiindulási ábra)
+
+Az igazi megoldás azonban az, ha kiszámoljuk adott napra a *feltételes*
+eloszlást, tehát hogy a napon *belül* milyen volt az életkorok
+eloszlása. Ezt kézzel megtehetjük könnyen:
+
+``` r
+temp2 <- as.data.table(reshape2::melt(t(apply(temp$z, 1, function(x) x/sum(x)))))
+temp2$Var1 <- as.Date(temp2$Var1, origin = "1970-01-01")
+```
+
+És ezt ábrázolva megkapjuk a megfelelő végeredményt:
+
+``` r
+ggplot(temp2, aes(x = Var1, y = Var2, fill = value)) + geom_tile() +
+  scale_fill_distiller(palette = 'YlOrRd') + scale_x_date(date_breaks = "month", date_labels = "%b") +
+  labs(x = "", y = "Életkor [év]", fill = "")
+```
+
+![](README_files/figure-gfm/unnamed-chunk-31-1.png)<!-- -->
+
+Látványosabbá tehetjük az eredményt, ha feltüntetjük az átlagos életkort
+(mivel nagyon finom felbontásban megvan az eloszlást, ezt könnyen
+kiszámolhatjuk, lényegében numerikusan integrálunk), illetve ábrázoljuk
+csak a relevánsabb életkortartományt; ezt az ábrát fogjuk később
+használni.
+
+### Eredmények
+
+Az adatbázis szerint az elhunytak közül 15244 fő (51.4%) férfi.
+
+Az életkori eloszlás:
+
+``` r
+ggplot(MortData, aes(x = Age)) + stat_density(geom = "line", position = "identity") +
+  labs(x = "Életkor [év]", y = "")
+```
+
+![](README_files/figure-gfm/unnamed-chunk-32-1.png)<!-- -->
+
+Az elhunytak életkori eloszlása nem szerint:
+
+``` r
+ggplot(MortData, aes(x = Age, color = Sex)) + stat_density(geom = "line", position = "identity") +
+  labs(x = "Életkor [év]", y = "") + theme(legend.position = "bottom", legend.title = element_blank())
+```
+
+![](README_files/figure-gfm/unnamed-chunk-33-1.png)<!-- -->
+
+(Ez az ábra a csoporton belüli eloszlást mutatja, tehát nem jeleníti
+meg, hogy a férfiak és nők száma nem ugyanannyi.)
+
+Ez annyiban félrevezető, hogy egybeönti az egész időszak adatait, pedig
+ezek változhattak menet közben. Márpedig fontos lehet ezt is vizsgálni,
+hátha eltolódik valamilyen irányba az elhunytak életkora! A férfiak és a
+nők között nem volt nagy különbség, úgyhogy a továbbiakhoz kezeljük őket
+egyben, viszont a kérdés vizsgálatához bontsuk meg az ábrát a dátum
+szerint. Ehhez azonban más ábrázolásra lesz szükségünk. Az alábbi ábrán
+a vízszintes tengelyen látható az idő, a függőleges tengelyen az
+életkor, és minél világosabb egy pont annál gyakoribb az adott
+időpontban az adott életkor előfordulása. Hogy jobban vezesse a szemet,
+fehér vonal jelzi az átlagéletkor alakulását ahogy az idő halad előre:
+
+``` r
+ggplot(temp2, aes(x = Var1, y = Var2, fill = value)) + geom_tile() +
+  scale_fill_distiller(palette = 'YlOrRd') +
+  geom_line(data = temp2[,.(weighted.mean(Var2, value)), .(Var1)], aes(x = Var1, y = V1),
+            inherit.aes = FALSE, color = "white") +
+  lims(y = c(40, NA)) + scale_x_date(date_breaks = "month", date_labels = "%b") +
+  labs(x = "", y = "Életkor [év]", fill = "")
+```
+
+    ## Warning: Removed 74191 rows containing missing values (geom_tile).
+
+![](README_files/figure-gfm/unnamed-chunk-34-1.png)<!-- -->
+
+### Értelmezés, következtetések, limitációk
+
+Ami az összesített életkori eloszlást illeti, az ábra mutatja, hogy mely
+életkorból kerül ki az elhunytak többsége. Csábító lenne azt gondolni,
+hogy ez mutatja az adott életkor kockázatát, de ez nem igaz (gondoljunk
+csak a 100 évesekre: nyilván nem arról van szó, hogy ott már nagyon pici
+a kockázat, hanem arról, hogy eleve is rendkívül kevés ilyen életkorú
+lakos van, így közülük akár már kis számú halál is jelezhet nagyon nagy
+kockázatot).
+
+Az előbbi zárójeles gondolat sugallhat egy olyan ötletet, hogy akkor a
+halottak számát adott életkorban osszuk el az olyan életkorú emberek
+számával az országban. Ez már tényleg megfelelő kockázat-mutatónak
+tűnik, de vigyázzunk: ez még mindig nem jó, hiszen a kockázatot –
+természetesen – az fejezi ki, hogy a *fertőzöttek* mekkora hányada hal
+meg (nem a lakosoké). Az viszont nem tudhatjuk, hogy a lakosok hány
+százaléka fertőzött, pláne nem életkoronként! Lényegében azt mondhatjuk,
+hogy a fenti leosztás *csak* akkor működne, ha minden életkorban az
+egész lakosság fertőződött volna.
+
+Ha legalább az igaz lenne, hogy minden életkorban azonos az
+átfertőzöttség (ha nem is 100%), akkor még lehetne értelme a
+leosztásnak, hiszen mondhatnánk, hogy bár a konkrét számok nem igazak,
+de mindegyik ugyanannyival van elcsúszva (például ha valójában minden
+életkorban 50% az átfertőzöttség, akkor a valódi kockázat a számolt
+kétszerese – de minden életkorban kétszerese), így legalább a relatív
+viszonyok, tehát a görbe alakja jó lenne. Sajnos ezt sem tudhatjuk.
+
+Ennek ellenére egy értelme mégis lehet egy ilyen számításnak: alsó
+korlátot ad a halálozási arányra! Azt mondhatjuk, hogy még ha 100% is
+lenne az átfertőzöttség, akkor is legalább ennyi a halálozási arány… a
+valódi átfertőzöttség ennél csak kisebb lehet, így a valódi halálozási
+arány csak nagyobb. Ezt az alsó korlátot mutatja az alábbi ábra (első
+lépésben letöltjük hozzá az Eurostat-tól a korfát, majd életkor és nem
+szerint rétegezzük az adatainkat, és így kapcsoljuk össze a korfával):
+
+``` r
+PopData <- as.data.table(eurostat::get_eurostat("demo_pjan"))
+```
+
+    ## Table demo_pjan cached at C:\Users\FERENC~1\AppData\Local\Temp\Rtmp6Bhx7z/eurostat/demo_pjan_date_code_FF.rds
+
+``` r
+PopData <- PopData[geo=="HU"&sex!="T"&!age%in%c("TOTAL", "UNK")&time=="2020-01-01"]
+PopData$age[PopData$age=="Y_LT1"] <- "Y0"
+PopData$age[PopData$age=="Y_OPEN"] <- "Y100"
+PopData$Age <- as.numeric(substring(PopData$age, 2))
+PopData$Sex <- ifelse(PopData$sex=="F", "Nő", "Férfi")
+
+MortData$AgeMax100 <- MortData$Age
+MortData$AgeMax100[MortData$AgeMax100>100] <- 100
+
+setkey(MortData, Sex, AgeMax100)
+MortDataStratified <- MortData[CJ(Sex = c("Férfi", "Nő"), AgeMax100 = 0:100), .N, by = .EACHI]
+
+MortDataStratified <- merge(MortDataStratified, PopData[,.(AgeMax100 = Age, Sex, Pop = values)])
+
+MortDataStratified$Mort <- MortDataStratified$N / MortDataStratified$Pop*100
+MortDataStratified$Sex <- as.factor(MortDataStratified$Sex)
+
+fit <- mgcv::gam(N ~ s(AgeMax100, by = Sex) + Sex, offset = log(Pop), data = MortDataStratified, family = poisson)
+MortDataStratified$Pred <- predict(fit, type = "response")*100
+MortDataStratified$PredSE <- predict(fit, type = "response", se.fit = TRUE)$se.fit
+MortDataStratified$PredCIlwr <- MortDataStratified$Pred - 1.96 * MortDataStratified$PredSE * 100
+MortDataStratified$PredCIupr <- MortDataStratified$Pred + 1.96 * MortDataStratified$PredSE * 100
+
+p <- ggplot(MortDataStratified, aes(x = AgeMax100, group = Sex, color = Sex, fill = Sex)) +
+  geom_line(aes(y = Mort), alpha = 0.3) + geom_line(aes(y = Pred)) +
+  geom_ribbon(aes(ymin = PredCIlwr, ymax = PredCIupr), color = NA, alpha = 0.4) +
+  labs(x = "Életkor [év]", y = "Halálozási arány alsó korlátja [%]") + coord_cartesian(xlim = c(20, NA)) +
+  theme(legend.position = "bottom", legend.title = element_blank())
+p
+```
+
+![](README_files/figure-gfm/unnamed-chunk-35-1.png)<!-- -->
+
+Az ábrán a vastag vonal a – spline-nal – simított becslést, a halvány
+vonal az életévenkénti számítás eredményét mutatja; a satírozott
+tartomány a 95%-os konfidenciaintervallum. Érdemes a jobb láthatóság
+miatt az ábrát logaritmikus függőleges tengellyel is megnézni:
+
+``` r
+p + scale_y_log10(breaks = c(1, 0.1, 0.01, 0.001, 0.0001), labels = c(1, 0.1, 0.01, 0.001, "0.0001"))
+```
+
+![](README_files/figure-gfm/unnamed-chunk-36-1.png)<!-- -->
+
+(Megjegyzés: a fenti értelemben vett halálozási arányt, tehát amikor a
+halottak számát a fertőzöttek számával osztjuk, szokás IFR-nek nevezni.
+Ez, és csak ez méri a betegség súlyosságát. A halottak számának a
+regisztrált esetekhez való viszonyítása – rövidítése általában CFR – bár
+kézenfekvőnek tűnhet, erre a célra alkalmatlan, hiszen az, hogy a
+fertőzöttek mekkora száma kerül detektálásra, a tesztelési aktivitástól
+is függ. Emiatt a CFR nem jó mutatója a betegség súlyosságának, hiszen
+befolyásolja a tesztelés intenzitása is.)
+
+Végezetül érdemes megjegyezni, hogy *minden* olyan vizsgálat, ami a
+halálozásokon alapul természetesen érzékeny arra, hogy pontosan milyen
+definíciókat alkalmazunk a halálozások halálokhoz rendelésében. Ennek
+kérdéseit részletese tárgyalom a [egy másik
+írásomban](https://github.com/tamas-ferenci/ExcessMortEUR).
+
+Mi a helyzet az életkori arány eltolódásával? Ez kicsit nehezebb kérdés,
+hiszen elvileg két oka lehet az eltolódásának: a fertőzöttek életkori
+eloszlásának változása, illetve a korspecifikus halálozás megváltozása.
+Önmagában a halottak életkorának ismerete nem teszi lehetővé e kettő
+elkülönítését: egy csökkenés lehet azért is, mert a járvány fiatalabb
+korosztályban kezd terjedni, vagy azért is, mert megnő a súlyosság
+(pláne, ha ez elsősorban a fiatalokat érinti), vagy a kettő
+
+## Az elhunytak társbetegségei külön-külön vizsgálva
+
+### Technikai részletek
+
+A kikódolás részleteit lásd korábban.
+
+### Eredmények
 
 Nézzük meg, hogy az elhunytak mekkora hányada szenvedett a 11 vizsgált
 társbetegségben (azaz mekkora volt a társbetegségek prevalenciája):
@@ -829,7 +978,7 @@ ggplot(merge(melt(MortData,  measure.vars = ComorbLabels$variable), ComorbLabels
   geom_errorbar(width = 0.5) + labs(x = "", y = "Prevalencia [%]")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-35-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-37-1.png)<!-- -->
 
 Érdekes – és fontos – kérdés, hogy ez hogyan néz ki életkoronként és
 nemenként. Az életkort (természetesen!) folytonos változóként kezeljük,
@@ -852,7 +1001,7 @@ ggplot(ComorbPrevs, aes(x = Age, y = est*100, color = Sex, fill = Sex, ymin = lw
   theme(legend.position = "bottom", legend.title = element_blank())
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-36-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-38-1.png)<!-- -->
 
 Érdekes kérdés a komorbiditások együttes előfordulása. Ennek
 legprimitívebb vizsgálati módszere, ha egyszerűen megszámoljuk a
@@ -868,7 +1017,7 @@ Nézzük hogyan alakul ennek a megoszlása:
 ggplot(MortData, aes(x = ComorbCount)) + geom_bar() + labs(x = "Társbetegségek száma", y = "Gyakoriság [fő]")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-38-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-40-1.png)<!-- -->
 
 Itt is vizsgáljuk meg a kérdést kor- és nemspecifikusan:
 
@@ -883,11 +1032,9 @@ ggplot(reshape2::melt(table(MortData$ComorbCount, MortData$Age, MortData$Sex)),
   theme(legend.position = "bottom", legend.title = element_blank(), panel.spacing = unit(1, "lines"))
 ```
 
-    ## Warning: Removed 800 rows containing missing values (position_stack).
+![](README_files/figure-gfm/unnamed-chunk-41-1.png)<!-- -->
 
-![](README_files/figure-gfm/unnamed-chunk-39-1.png)<!-- -->
-
-## Az eredmények értelmezése, következtetések
+### Értelmezés, következtetések, limitációk
 
 Az egyik legtermészetesebb kérdés, amire sokan választ szeretnének
 kapni, hogy melyik társbetegség növeli meg (és mennyire) a
@@ -946,9 +1093,243 @@ a következő szempontokra muszáj felhívni a figyelmet:
     Tehát nem az számít, hogy az emberek mekkora része hal bele egy
     betegségbe, hanem, hogy mennyi a vele töltött átlagos idő.
 
+## Társbetegségek kombinációi
+
+A fenti elemzés semmit nem mond a társbetegségek együttes
+előfordulásáról: vannak társbetegség-kombinációk amik aránytalanul
+gyakoriak, vagy épp ritkák? (Természetesen ne felejtsük semmikor: most
+kizárólag a koronavírusban érintett, és azon belül is csak az abban meg
+is haló alanyok társbetegségeiről beszélünk!)
+
+### Technikai részletek
+
+Úgy fogunk számolni, hogy minden lehetséges társbetegség-párra
+elkészítjük a kontingenciatáblájukat, majd abból kiszámítjuk az
+általában használatos metrikákat – esélyhányados (OR), relatív rizikó
+(RR), Yule-féle *Q*, Pearson-féle *φ*, tetrahorikus korreláció – az
+asszociáció szorosságának mérésére is (valamint a nyers, együttes
+előfordulás-számot is):
+
+``` r
+comorbcombs <- CJ(ComorbLabels$variable, ComorbLabels$variable)
+comorbcombs <- cbind(comorbcombs, rbindlist(lapply(1:nrow(comorbcombs), function(i) {
+  tab <- table(MortData[[comorbcombs$V1[i]]], MortData[[comorbcombs$V2[i]]])
+  data.table(cooccurr = tab[2, 2]/nrow(MortData),
+             or = epitools::epitab(tab, method = "oddsratio")$tab["TRUE", "oddsratio"],
+             rr = epitools::epitab(tab, method = "riskratio")$tab["TRUE", "riskratio"], phi = psych::phi(tab),
+             yule = psych::Yule(tab), tetrachoric = psych::tetrachoric(tab)$rho)
+})))
+comorbcombs$logit <- log(comorbcombs$or)
+comorbcombs <- merge(comorbcombs, ComorbLabels[,.(V1 = variable, V1label = varlabel)], by = "V1")
+comorbcombs <- merge(comorbcombs, ComorbLabels[,.(V2 = variable, V2label = varlabel)], by = "V2")
+```
+
+A kor és a nem hatását úgy fogjuk kontrollálni, hogy egy logisztikus
+regressziót futtatunk le, ismét csak, minden pár között. Igazából a
+fenti esélyhányadost is megkaphattuk volna egy logisztikus
+regresszióból, amelyben az egyik társbetegség az eredményváltozó, és a
+másik az – egyedüli – magyarázó változó. Ebben a keretben már nagyon
+természetes a kontrollálás: egyszerűen berakjuk pluszban magyarázó
+változóként az életkort és a nemet is. Az életkort spline-nal kibontjuk,
+hogy megengedjük az esetleges nemlineáris hatását, valamint az életkor
+és a nem között megengedjük az interakciót:
+
+``` r
+comorbcombs$adjor <- sapply(1:nrow(comorbcombs), function(i)
+  exp(coef(mgcv::gam(as.formula(paste0(comorbcombs$V1[i], "~ s(Age, by = Sex) + Sex +", comorbcombs$V2[i])),
+                     data = MortData, family = binomial))[3]))
+```
+
+### Eredmények
+
+Nézzük először a társbetegségeket páronként. Az alábbi ábra a szín
+világosságával mutatja, hogy az egyes kombinációknak mekkora a
+prevalenciája, azaz az elhunytak mekkora hányada szenvedett az adott
+társbetegség-párban (természetesen nem feltétlenük *csak* abban a
+kettőben):
+
+``` r
+ggplot(comorbcombs, aes(x = stringr::str_wrap(V1label, 15), y = stringr::str_wrap(V2label, 15),
+                        fill = cooccurr*100)) +
+  geom_raster() + scale_fill_continuous(trans = "log10") + labs(x = "", y = "", fill = "Prevalencia [%]") +
+  scale_x_discrete(guide = guide_axis(angle = 90))
+```
+
+![](README_files/figure-gfm/unnamed-chunk-44-1.png)<!-- -->
+
+Vigyázzunk, hogy a színezés logaritmikus, hogy a kis prevalenciák is
+láthatóak legyenek. A főátlóban találjuk a sima, korábban is látott
+prevalenciákat, és az ábra természetesen szimmetrikus.
+
+Akkor ebből már láthatjuk, hogy melyik azok a párok amik hajlamosabbak
+együtt előfordulni? Nem. A probléma az, hogy *önmagában* az, hogy egy
+adott pár gyakran fordul elő, még nem jelenti ezt – mert figyelmen kívül
+hagyja, hogy a pár tagjai külön-külön milyen gyakran fordulnak elő! Ha
+gyakran, akkor még egy meglehetősen gyakori együttes előfordulás sem
+feltétlenül jelent összefüggést. Ha az alanyok 60% szenved az egyik
+társbetegségben, 30%-a egy másikban, akkor 0, 6 ⋅ 0, 3 = 18%-ra várjuk
+azok arányát akiknél mindkettő előfordul – *akkor is* ha a két
+társbetegség független egymástól! Simán lehet, hogy egy sor társbetegség
+önmagában sincs 18%, miközben ennél a kombinációnál a 18% még azt
+jelenti, hogy nincs kapcsolat. Ez egyúttal azt is mutatja, hogy mit kell
+mérnünk: hogy mennyire megy az együttes előfordulás a 18% *fölé*, ez
+jelenti ugyanis az együttjárást.
+
+Számos konkrét mutató létezik attól függően, hogy ezt pontosan hogyan
+mérjük le. Az egyik népszerű a Pearson-féle *φ*, melynek 0 értéke jelzi,
+ha nincs együttjárás, pozitív értéke pozitív, negatív értéke negatív
+kapcsolatot jelent a két társbetegség között:
+
+``` r
+ggplot(comorbcombs[V1!=V2], aes(x = stringr::str_wrap(V1label, 15),
+                                y = stringr::str_wrap(V2label, 15), fill = phi))+
+  geom_raster() + labs(x = "", y = "") + scale_x_discrete(guide = guide_axis(angle = 90)) +
+  scale_fill_gradient2(limits = c(-max(abs(range(comorbcombs[V1!=V2]$phi))),
+                                  max(abs(range(comorbcombs[V1!=V2]$phi)))))
+```
+
+![](README_files/figure-gfm/unnamed-chunk-45-1.png)<!-- -->
+
+Egy másik népszerű metrika az esélyhányados (hányszorosára nő az egyik
+társbetegség előfordulásának az esélye – nem a valószínűsége! – ha a
+másik jelen van):
+
+``` r
+ggplot(comorbcombs[V1!=V2], aes(x = stringr::str_wrap(V1label, 15), y = stringr::str_wrap(V2label, 15),
+                                fill = or)) +
+  geom_raster() + scale_fill_gradient2(limits = c(0, max(comorbcombs[V1!=V2]$or)), midpoint = 1) +
+  scale_x_discrete(guide = guide_axis(angle = 90)) + labs(x = "", y = "")
+```
+
+![](README_files/figure-gfm/unnamed-chunk-46-1.png)<!-- -->
+
+Mivel ez egy szorzó (hány*szorosára* nő), így az 1 jelenti azt, hogy
+nincs összefüggés, az 1 fölötti értékek a pozitív, az 1 alattiak a
+negatív kapcsolatot.
+
+Akármelyik mutatót is használjuk, az összkép hasonló: a magasvérnyomás
+és a cukorbetegség, a pitvarfibrilláció és a szívelégtelenség, valamint
+a krónikus veseelégtelenség és a szívelégtelenség kiemelten hajlamos
+együttjárni, ezen felül még az ischaemiás szívbetegség és a
+pitvarfibrilláció mutat több közepesen erős együttjárást. A
+rosszindulatú daganat és a krónikus májbetegség viszont mintha
+“taszítaná” a többi betegséget, azaz, a fennállásuk esetén aránytalanul
+ritka, hogy más társbetegség is együttesen jelen legyen még. Kiemelten
+ritkán fordul elő a stroke és a krónikus májbetegség kombinációja.
+
+Érdekes egy kicsit elgondolkozni a rosszindulatú daganat példáját, mert
+ad egy fontos elemzési ötletet. Mi lehet ezeknek a negatív
+asszociációknak az oka? Valószínűleg nagyon fontos komponens, amiről
+korábban szó volt, hogy kevesebb ideig élnek ezzel együtt az emberek, de
+az a gondolat is felmerülhet, hogy a rákosok egyszerűen fiatalabbak
+relatíve (ha megnézzük a korábbi eredményeket, ez tényleg így van). Ez
+utóbbi viszont ad egy ötletet: valahogy kontrollálni kell ezekre a
+tényezőkre. Használjunk egy többváltozós regressziós modellt, hiszen az
+pont erre szolgál: az ebben kapott eredmény, ha berakjuk az életkort és
+a nemet további magyarázó változóként, úgy lesz értendő, hogy adott
+betegség és a másik között mi az összefüggés *ha* közben az életkort és
+a nemet rögzítetten tartjuk. Ez épp a problémánkat szünteti meg, tehát
+azt, hogy a betegségben szenvedők egyúttal idősebbek, és a másik
+betegség gyakoribb előfordulásának valójában a magasabb életkor az oka.
+Az esélyhányados lesz az erre továbbvihető mutató, az ugyanis
+előállítható egy megfelelően választott ilyen regressziós modellel:
+
+``` r
+ggplot(comorbcombs[V1!=V2], aes(x = stringr::str_wrap(V1label, 15), y = stringr::str_wrap(V2label, 15),
+                                fill = adjor)) + geom_raster() +
+  scale_fill_gradient2(limits = c(0, max(comorbcombs[V1!=V2]$adjor)), midpoint = 1) +
+  scale_x_discrete(guide = guide_axis(angle = 90)) + labs(x = "", y = "")
+```
+
+![](README_files/figure-gfm/unnamed-chunk-47-1.png)<!-- -->
+
+Látszik, hogy az alaphelyzet nem változott, így most már tudhatjuk, hogy
+a látottak nem az életkor és nem miatti
+[confounding](https://tamas-ferenci.github.io/FerenciTamas_AzOrvosiMegismeresModszertanaEsAzOrvosiKutatasokKritikusErtekelese/)
+következményei.
+
+A társbetegségek kapcsolatának van egy további, gyakorlatban népszerű
+elemzési (és megjelenítési) megközelítése: tekintsük őket egy
+hálózatnak, matematikusabb szóval gráfnak! Ekkor minden társbetegségnek
+megfelel egy pont, a köztük lévő kapcsolatokat pedig úgy szemléltetjük,
+hogy a pontokat összekötjük. A dolog kicsit cicomázható is: a pontok
+mérete legyen arányos az adott betegség (önmagában vett) előfordulási
+gyakoriságával, az összekötő egyenes vastagsága pedig a két betegség
+közti kapcsolat erősségével. Ez akkor jeleníthető meg igazán jól, ha
+csak a pozitív kapcsolatokat tekintjük, sőt, azt átláthatóság kedvéért
+csak azokat az összeköttetéseket rajzoljuk ki, ahol az esélyhányados
+több mint 1,3 (az egyik előfordulása legalább 30%-kal növeli a másik
+előfordulásának az esélyét):
+
+``` r
+comorbnet <- igraph::graph_from_data_frame(comorbcombs[V1!=V2&or>1.3, .(V1, V2, or)],
+                                           vertices = comorbcombs[V1==V2, .(V1, cooccurr, V1label)])
+plot(comorbnet, vertex.size = igraph::V(comorbnet)$cooccurr*30,
+     vertex.label = stringr::str_wrap(igraph::V(comorbnet)$V1label, 20),
+     edge.width = igraph::E(comorbnet)$or*2)
+```
+
+![](README_files/figure-gfm/unnamed-chunk-48-1.png)<!-- -->
+
+Ez a megközelítés különösen akkor hasznos, ha a fentinél jóval több
+társbetegséget tudunk vizsgálni.
+
+Végezetül egy szóval térjünk ki arra is, hogy mi a helyzet, ha kettőnél
+több társbetegség kapcsolatát akarjuk vizsgálni. Ilyenkor a helyzet
+gyorsan bonyolódik: egyrészt a lehetséges kombinációk száma nagyon
+gyorsan megnő, másrészt nem lesz egyértelmű, hogy hogyan mérjük az
+együttjárást (vagy, hogy egyáltalán mit értünk ez alatt).
+
+Egy alternatív lehetőség az ún. UpSet-diagramok használata. Ez egy
+szellemesen definiált módon megkeresi a leggyakoribb kombinációkat
+(tetszőleges számú társbetegséggel, lehet 0 is, 1, is, 2 is, de 2-nél
+több is – ez nincsen megkötve, ezt szintén az algoritmus találja ki!),
+és ezeket egy jól értelmezhető formában elrendezi:
+
+``` r
+ComplexUpset::upset(
+  MortData, ComorbLabels$variable, keep_empty_groups = TRUE, n_intersections = 20,
+  name = "", set_sizes = FALSE,
+  base_annotations = list(
+    "Intersection size" = (
+      ComplexUpset::intersection_size() +
+        ylab("Társbetegségek együttes \nelőfordulási gyakorisága \n(első 20)")
+    )),
+  annotations = list(
+    "Koreloszlás" = (
+      ggplot(mapping = aes(y = Age)) +
+        geom_violin() + geom_boxplot(width = 0.1, color = "grey", alpha = 0.2, outlier.shape = NA) +
+        geom_hline(yintercept = mean(MortData$Age), linetype = "dashed", color = "red")
+    ),
+    "Nem szerinti arányok" = (
+      ggplot(mapping = aes(fill = Sex)) +
+        geom_bar(position = "fill") + scale_y_continuous(labels = scales::percent_format()) +
+        geom_hline(yintercept = 0.5, linetype = "dashed", color = "grey") +
+        labs(y = "Nemek aránya", fill = "")
+    )
+  )
+)
+```
+
+![](README_files/figure-gfm/unnamed-chunk-49-1.png)<!-- -->
+
+Az ábra alján látjuk a kombinációkat: amely betegségeket fekete pötty
+jelöl és függőlegesen össze vannak kötve, azok kombinációját jelenti a
+kérdéses oszlop. Felette található az adott kombináció gyakorisága, de
+fontos, hogy ez úgy értendő, hogy mennyi beteg van *pontosan* ezzel a
+kombinációval. (Tehát például ahol egyedül a magasvérnyomásnál van
+fekete pötty, az nem azt jelenti, hogy hányaknak van magas vérnyomása,
+hanem azt, hogy hányaknak van *csak* magas vérnyomása.)
+
+A felette lévő két diagram pedig az életkor és a nem eloszlását adja meg
+a kérdéses kombinációban, így az is érzékelhetővé válik, hogy ilyen
+szempontból eltérnek-e az egyes kombinációk.
+
+Az ábra a 20 leggyakoribb kombinációt tartalmazza.
+
 ## Továbbfejlesztési ötletek
 
--   [ ] Korspecifikus halálozás, mint alsó becslés az IFR-re.
+-   [x] Korspecifikus halálozás, mint alsó becslés az IFR-re.
 -   [ ] Másféle KDE (pl. `ks` csomag) az életkori viszonyok időbeli
     alakulásának becslésére, vagy spline-ok.
 -   [ ] További betegségek kikódolása.
@@ -957,5 +1338,27 @@ a következő szempontokra muszáj felhívni a figyelmet:
     vagy numerikusan?).
 -   [ ] Színskála eltüntetése?
 -   [ ] Normálisabb konfidenciaintervallum a GAM-ra (`gratia`?).
--   [ ] Komorbiditások számának életkor- és nemspecifikus vizsgálata.
--   [ ] Komorbiditások kombinációinak komplexebb vizsgálata.
+-   [x] Komorbiditások számának életkor- és nemspecifikus vizsgálata.
+-   [x] Komorbiditások kombinációinak komplexebb vizsgálata.
+-   [ ] Részletesebb leírás, hogy az UpSet-diagramot hogyan kell
+    olvasni.
+
+## Köszönetnyilvánítás
+
+Köszönöm Balázs Tamásnak, hogy felhívta a figyelmemet az UpSet
+módszertanra.
+
+## Irodalmi hivatkozások
+
+-   Lex, Alexander, et al. “UpSet: visualization of intersecting sets.”
+    IEEE Transactions on Visualization and Computer Graphics 20.12
+    (2014): 1983-1992. DOI: 10.1109/TVCG.2014.2346248.
+    [Link](https://ieeexplore.ieee.org/document/6876017).
+-   Cramer, Angélique OJ, et al. “Comorbidity: A network perspective.”
+    Behavioral and Brain Sciences 33.2-3 (2010): 137. DOI:
+    10.1017/s0140525x09991567.
+    [Link](https://www.cambridge.org/core/journals/behavioral-and-brain-sciences/article/abs/comorbidity-a-network-perspective/4A9FE571B49A9150DFABCD5845EC0B3D).
+-   Hidalgo, César A., et al. “A dynamic network approach for the study
+    of human phenotypes.” PLoS Comput Biol 5.4 (2009): e1000353. DOI:
+    10.1371/journal.pcbi.1000353.
+    [Link](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1000353).
