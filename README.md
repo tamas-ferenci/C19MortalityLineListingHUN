@@ -211,9 +211,9 @@ knitr::kable(table(MortData$Sex), col.names = c("Írásmód", "Gyakoriság"))
 
 | Írásmód | Gyakoriság |
 |:--------|-----------:|
-| férfi   |      10826 |
+| férfi   |      10853 |
 | Férfi   |       4431 |
-| no      |      10424 |
+| no      |      10448 |
 | No      |       2477 |
 | Nő      |       1524 |
 
@@ -288,47 +288,47 @@ knitr::kable(sort(table(unlist(Comorbs)), decreasing = TRUE)[1:50],
 
 | Társbetegség                      | Gyakoriság |
 |:----------------------------------|-----------:|
-| magasvérnyomás-betegség           |      11106 |
-| cukorbetegség                     |       8388 |
-| magas vérnyomás                   |       8142 |
-| iszkémiás szívbetegség            |       3060 |
-| szívbetegség                      |       2383 |
-| demencia                          |       2020 |
-| szívelégtelenség                  |       1549 |
-| krónikus veseelégtelenség         |       1534 |
-| szívritmuszavar                   |       1361 |
-| daganatos megbetegedés            |       1332 |
-| veseelégtelenség                  |       1305 |
-| tüdobetegség                      |       1210 |
-| érelmeszesedés                    |        914 |
-| vérszegénység                     |        883 |
-| kóros elhízás                     |        852 |
-| nem ismert alapbetegség           |        850 |
-| pitvarfibrilláció                 |        806 |
+| magasvérnyomás-betegség           |      11144 |
+| cukorbetegség                     |       8411 |
+| magas vérnyomás                   |       8145 |
+| iszkémiás szívbetegség            |       3067 |
+| szívbetegség                      |       2391 |
+| demencia                          |       2024 |
+| szívelégtelenség                  |       1550 |
+| krónikus veseelégtelenség         |       1537 |
+| szívritmuszavar                   |       1364 |
+| daganatos megbetegedés            |       1339 |
+| veseelégtelenség                  |       1308 |
+| tüdobetegség                      |       1216 |
+| érelmeszesedés                    |        915 |
+| vérszegénység                     |        886 |
+| kóros elhízás                     |        855 |
+| nem ismert alapbetegség           |        853 |
+| pitvarfibrilláció                 |        809 |
 | asztma                            |        732 |
-| krónikus obstruktív tüdobetegség  |        691 |
-| elhízás                           |        662 |
+| krónikus obstruktív tüdobetegség  |        693 |
+| elhízás                           |        664 |
 | agyi infarktus                    |        649 |
 | parkinson-kór                     |        636 |
-| stroke                            |        622 |
-| pangásos szívelégtelenség         |        540 |
-| adat feltöltés alatt              |        476 |
-| epilepszia                        |        460 |
+| stroke                            |        626 |
+| pangásos szívelégtelenség         |        541 |
+| adat feltöltés alatt              |        478 |
+| epilepszia                        |        462 |
 | általános érelmeszesedés          |        441 |
-| májbetegség                       |        417 |
+| májbetegség                       |        421 |
 | érszukület                        |        403 |
 | alzheimer-kór                     |        343 |
 | csontritkulás                     |        328 |
 | reflux                            |        316 |
-| depresszió                        |        300 |
-| pajzsmirigybetegség               |        265 |
+| depresszió                        |        301 |
+| pajzsmirigybetegség               |        267 |
 | magasvérnyomás betegség           |        260 |
-| vesebetegség                      |        259 |
+| vesebetegség                      |        260 |
 | daganatos betegség                |        256 |
 | pajzsmirigy betegség              |        235 |
 | magas vérzsírszint                |        231 |
 | tüdogyulladás                     |        221 |
-| pajzsmirigy alulmuködés           |        217 |
+| pajzsmirigy alulmuködés           |        218 |
 | szív- és érrendszeri betegség     |        208 |
 | szív- és érrendszeri megbetegedés |        194 |
 | tüdoembólia                       |        178 |
@@ -336,8 +336,8 @@ knitr::kable(sort(table(unlist(Comorbs)), decreasing = TRUE)[1:50],
 | idült iszkémiás szívbetegség      |        162 |
 | köszvény                          |        157 |
 | szívinfarktus                     |        152 |
+| agykárosodás                      |        146 |
 | agysorvadás                       |        146 |
-| agykárosodás                      |        145 |
 
 Szedjük ki az egyedi neveket:
 
@@ -410,7 +410,7 @@ res <- lapply(unique(h), function(x) IndivComorbNames[h==x])
 resDF <- as.data.table(plyr::ldply(res, rbind))
 ```
 
-Ezzel lényegében véletlenszerűen kapjuk meg a halmazokat. Összesen 2988
+Ezzel lényegében véletlenszerűen kapjuk meg a halmazokat. Összesen 2989
 halmazunk keletkezett. Az egyes halmazok tartalmát jól megadja az első
 elemük (az első oszlop), mert az mindenképp létezik. Nézzük meg az első
 20-at, nem feledve, hogy itt az “első” semmiféle érdemi sorrendet nem
@@ -497,7 +497,7 @@ knitr::kable(resDF[order(apply(resDF, 1, function(x) sum(!is.na(x))), decreasing
 | krónikus obstruktív tüdőbetegség        | krónikus obstuktív tüdőbetegség        | krónikus obstruktív tüdobetegség      | krónbikus obstruktív tüdobetegség      | króniksu obstruktív tüdobetegség         | krónukis obstruktív tüdobetegség         | krónikus obtruktív tüdőbetegség          | krónikus obtruktív tüdobetegség | krónikus obstriktív tüdobetegség | krónikus obstruktiv tüdobetegség    | krónikus obstruktív tüdobetegségség | krónikus obstrukív tüdobetegség  | krónikus instruktív tüdobetegség  | krónikus instruktív tüdobetegség     |                           |                           |                          |                            |                           |                            |                        |                           |                         |
 | iszkémiás szívbetegség                  | iszkémiás szívbetegségek               | iszkémiás szívbeegség                 | iszkmiás szívbetegség                  | iszkémiás szívebetegség                  | iszkémias szívbetegség                   | iszkémiás szívbetegség                   | iszkémiás szivbetegség          | iszkémiás szívbetegség?          |  iszkémiás szívbetegség             | iszkémiás szívbetegség.             | iszkémiás szívbtegség            | iszkémiáss szívbetegség           | iszkémás szívbetegség                |                           |                           |                          |                            |                           |                            |                        |                           |                         |
 | emlő rosszindulatú daganata             | gége rosszindulatú daganata            | bél rosszindulatú daganata            | méh rosszindulatú daganata             | arc rosszindulatú daganata               | bor rosszindulatú daganata               | agy rosszindulatú daganata               | máj rosszindulatú daganata      | here rosszindulatú daganata      | emlo rosszindulatú daganata         | száj rosszindulatú daganata         | a máj rosszindulatú daganata     | a bor rosszindulatú daganata      |                                      |                           |                           |                          |                            |                           |                            |                        |                           |                         |
-| veseelégtelenség                        | vese elégtelenség                      | veselégtelenség                       | veseelégteleneség                      | veseelégtelensség                        | veveelégtelenség                         | veseelégtelenésg                         | veseelégteleség                 | veseelégteneség                  | veseelételenség                     | veseelgételenség                    |                                  |                                   |                                      |                           |                           |                          |                            |                           |                            |                        |                           |                         |
+| veseelégtelenség                        | vese elégtelenség                      | veselégtelenség                       | veseelégteleneség                      | veseelégtelensség                        | veveelégtelenség                         | veseelégtelenésg                         | veseelégteleség                 | veseelégteneség                  | veseelételenség                     | veseelgételenség                    | veseelegtelenség                 |                                   |                                      |                           |                           |                          |                            |                           |                            |                        |                           |                         |
 | szívritmuszavar                         | szívritmus zavar                       | szívritmus-zavar                      | szívritmuszavarok                      | szívritmuszvar                           | szivritmuszavar                          | szavritmuszavar                          | szívrtmuszavar                  | szívtitmuszavar                  | szívritmuszvara                     | szívitmuszavar                      |                                  |                                   |                                      |                           |                           |                          |                            |                           |                            |                        |                           |                         |
 | pivarfibrilláció                        | pitvarfibrillácó                       | pitvafribrilláció                     | fitvarfibrilláció                      | pitvarfibrilláló                         | pitvarfibrillácio                        | pitvarfirilláció                         | pirvarfibrilláció               | pitvafibrilláció                 | pitvaribrilláció                    | pitvarfibrillláció                  |                                  |                                   |                                      |                           |                           |                          |                            |                           |                            |                        |                           |                         |
 | szívelégtelenség                        | szíveleégtelenség                      | szívelégetelnség                      | szívelégtlenség                        | szivelégtelenség                         | szívbelégtelenség                        | szívelégelenség                          | szívelégtelenég                 | szívelégtelenség.                | szívelégetelenség                   |                                     |                                  |                                   |                                      |                           |                           |                          |                            |                           |                            |                        |                           |                         |
@@ -690,7 +690,7 @@ ComorbLabels <- data.table(variable = c("atr_fib", "cancer", "copd", "demen", "d
 
 ## Az adatbázis jellemzői
 
-Jelen elemzés lezárásának a dátuma 2021-05-29, ekkor 29654 elhunyt volt
+Jelen elemzés lezárásának a dátuma 2021-05-31, ekkor 29728 elhunyt volt
 az adatbázisban, akinek halálozási időpontja is beazonosítható volt.
 Jelen vizsgálat az ő adataik felhasználásával készült.
 
@@ -801,7 +801,7 @@ használni.
 
 ### Eredmények
 
-Az adatbázis szerint az elhunytak közül 15244 fő (51.4%) férfi.
+Az adatbázis szerint az elhunytak közül 15281 fő (51.4%) férfi.
 
 Az életkori eloszlás:
 
@@ -844,7 +844,7 @@ ggplot(temp2, aes(x = Var1, y = Var2, fill = value)) + geom_tile() +
   labs(x = "", y = "Életkor [év]", fill = "")
 ```
 
-    ## Warning: Removed 74191 rows containing missing values (geom_tile).
+    ## Warning: Removed 75140 rows containing missing values (geom_tile).
 
 ![](README_files/figure-gfm/unnamed-chunk-34-1.png)<!-- -->
 
@@ -888,7 +888,7 @@ szerint rétegezzük az adatainkat, és így kapcsoljuk össze a korfával):
 PopData <- as.data.table(eurostat::get_eurostat("demo_pjan"))
 ```
 
-    ## Table demo_pjan cached at C:\Users\FERENC~1\AppData\Local\Temp\Rtmp6Bhx7z/eurostat/demo_pjan_date_code_FF.rds
+    ## Table demo_pjan cached at C:\Users\FERENC~1\AppData\Local\Temp\RtmpGIJ91h/eurostat/demo_pjan_date_code_FF.rds
 
 ``` r
 PopData <- PopData[geo=="HU"&sex!="T"&!age%in%c("TOTAL", "UNK")&time=="2020-01-01"]
@@ -915,8 +915,8 @@ MortDataStratified$PredCIlwr <- MortDataStratified$Pred - 1.96 * MortDataStratif
 MortDataStratified$PredCIupr <- MortDataStratified$Pred + 1.96 * MortDataStratified$PredSE * 100
 
 p <- ggplot(MortDataStratified, aes(x = AgeMax100, group = Sex, color = Sex, fill = Sex)) +
-  geom_line(aes(y = Mort), alpha = 0.3) + geom_line(aes(y = Pred)) +
-  geom_ribbon(aes(ymin = PredCIlwr, ymax = PredCIupr), color = NA, alpha = 0.4) +
+  geom_line(aes(y = Mort), alpha = 0.2) + geom_line(aes(y = Pred)) +
+  geom_ribbon(aes(ymin = PredCIlwr, ymax = PredCIupr), color = NA, alpha = 0.3) +
   labs(x = "Életkor [év]", y = "Halálozási arány alsó korlátja [%]") + coord_cartesian(xlim = c(20, NA)) +
   theme(legend.position = "bottom", legend.title = element_blank())
 p
@@ -970,12 +970,11 @@ Nézzük meg, hogy az elhunytak mekkora hányada szenvedett a 11 vizsgált
 társbetegségben (azaz mekkora volt a társbetegségek prevalenciája):
 
 ``` r
-ggplot(merge(melt(MortData,  measure.vars = ComorbLabels$variable), ComorbLabels)[
+SimplePrevs <- merge(melt(MortData,  measure.vars = ComorbLabels$variable), ComorbLabels)[
   ,.(mean(value)*100, binom.test(sum(value), length(value))$conf.int[1]*100,
-     binom.test(sum(value), length(value))$conf.int[2]*100), .(varlabel)],
-  aes(x = varlabel, y = V1, ymin = V2, ymax = V3)) +
-  geom_point(position = position_dodge(width = 0.5)) + coord_flip() +
-  geom_errorbar(width = 0.5) + labs(x = "", y = "Prevalencia [%]")
+     binom.test(sum(value), length(value))$conf.int[2]*100), .(varlabel)]
+ggplot(SimplePrevs, aes(x = varlabel, y = V1, ymin = V2, ymax = V3)) + geom_point() + coord_flip() +
+  geom_errorbar(width = 0.4) + labs(x = "", y = "Prevalencia [%]")
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-37-1.png)<!-- -->
@@ -1142,11 +1141,62 @@ comorbcombs$adjor <- sapply(1:nrow(comorbcombs), function(i)
 
 ### Eredmények
 
-Nézzük először a társbetegségeket páronként. Az alábbi ábra a szín
-világosságával mutatja, hogy az egyes kombinációknak mekkora a
-prevalenciája, azaz az elhunytak mekkora hányada szenvedett az adott
-társbetegség-párban (természetesen nem feltétlenük *csak* abban a
-kettőben):
+Nézzük először a társbetegségeket páronként. Kezdjük a legkézenfekvőbb
+elemzéssel: számítsuk ki a prevalenciákat úgy mint korábban, de most ne
+az összes beteg körében, hanem csak az adott társbetegséggel rendelkezők
+körében! Lényegében tehát feltételessé tesszük az elemzést: nem azt
+nézzük, hogy mekkora arányban van jelen mondjuk a szívelégtelenség,
+hanem, hogy *feltéve* hogy demencia jelen van, mekkor arányban van jelen
+szívelégtelenség (is). Ezt célszerű úgy ábrázolni, hogy adott betegség
+prevalenciáját tüntetjük fel a különböző feltételek mellett, hiszen
+ekkor látványosan, egy piros vonallal megjelölhetjük a feltétel nélkül
+prevalenciát, tehát az összes alany körében mért gyakoriságot:
+
+``` r
+ggplot(merge(merge(rbindlist(setNames(lapply(ComorbLabels$variable, function(v)
+  melt(MortData[MortData[[v]]==TRUE],  measure.vars = ComorbLabels$variable)[
+    ,.(mean(value)*100, binom.test(sum(value), length(value))$conf.int[1]*100,
+       binom.test(sum(value), length(value))$conf.int[2]*100), .(variable)]), ComorbLabels$variable), idcol = "Condition"),
+  ComorbLabels[, .(Condition = variable, ConditionLabel = varlabel)]),
+  ComorbLabels[, .(variable, VariableLabel = varlabel)], by = "variable")[Condition!=variable],
+  aes(x = ConditionLabel, y = V1, ymin = V2, ymax = V3)) + facet_wrap(~VariableLabel) +
+  geom_point() + coord_flip() + geom_errorbar(width = 0.5) + labs(x = "", y = "Prevalencia [%]") +
+  geom_hline(data = SimplePrevs[,.(VariableLabel = varlabel, V1)], aes(yintercept = V1), color = "red")
+```
+
+![](README_files/figure-gfm/unnamed-chunk-44-1.png)<!-- -->
+
+Az ábrán látható, hogy például a cukorbetegség prevalenciája 30% (ezt
+eddig is tudtuk), de a krónikus veseelégtelenséggel is rendelkezők
+elhunytak körében több, 40%, viszont a krónikus májbetegséggel bíró
+elhunytak körében kevesebb, 20%. Hát ezért is érdekes a társbetegségek
+kombinációnak vizsgálata…!
+
+(Persze ez még semmit nem mondott arról, hogy ezek a különbségek
+egyáltalán szignifikánsak e a szó statisztikai értelmében. A másik, hogy
+minden ilyen csak asszociáció, együttjárás, semmit nem tudhatunk arról,
+hogy melyik az oka melyiknek. Miért gyakoribb a cukorbetegség a
+veseelégtelenséggel rendelkező elhunytak körében? A veseelégtelenség
+okoz cukorbetegséget? A cukorbetegség okoz veseelégtelenséget? Valami
+harmadik dolog okozza egyszerre mindkettőt? Vagy valami ennél is kuszább
+okozati lánc van…? Ezekre a kérdésekre önmagában a fenti eredmény nem
+válaszol.)
+
+Az ábrával az egyetlen baj, hogy elég nehezen áttekinthető. Ráadásul
+lehetne akár fordítva is ábrázolni, tehát, hogy az egyes társbetegséggel
+rendelkezők körében a többi milyen gyakori (csak ekkor nem lehetne ilyen
+szép egyenest húzni az összességében vett gyakorisághoz). További
+probléma, hogy a helyzet automatikusan szimmetrikus – ha a
+veseelégtelenek körében több a cukorbeteg, akkor a cukorbetegek körében
+is több a veseelégtelen – ez matematikai szükségszerűség, de az ábra nem
+sugallja ezt a szimmetriát.
+
+Tudunk ennél célszerűbb vizualizációt alkotni?
+
+A válasz az, hogy igen. Az alábbi ábra a szín világosságával mutatja,
+hogy az egyes kombinációknak mekkora a prevalenciája, azaz az elhunytak
+mekkora hányada szenvedett az adott társbetegség-párban (természetesen
+nem feltétlenük *csak* abban a kettőben):
 
 ``` r
 ggplot(comorbcombs, aes(x = stringr::str_wrap(V1label, 15), y = stringr::str_wrap(V2label, 15),
@@ -1155,7 +1205,7 @@ ggplot(comorbcombs, aes(x = stringr::str_wrap(V1label, 15), y = stringr::str_wra
   scale_x_discrete(guide = guide_axis(angle = 90))
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-44-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-45-1.png)<!-- -->
 
 Vigyázzunk, hogy a színezés logaritmikus, hogy a kis prevalenciák is
 láthatóak legyenek. A főátlóban találjuk a sima, korábban is látott
@@ -1188,7 +1238,7 @@ ggplot(comorbcombs[V1!=V2], aes(x = stringr::str_wrap(V1label, 15),
                                   max(abs(range(comorbcombs[V1!=V2]$phi)))))
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-45-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-46-1.png)<!-- -->
 
 Egy másik népszerű metrika az esélyhányados (hányszorosára nő az egyik
 társbetegség előfordulásának az esélye – nem a valószínűsége! – ha a
@@ -1201,7 +1251,7 @@ ggplot(comorbcombs[V1!=V2], aes(x = stringr::str_wrap(V1label, 15), y = stringr:
   scale_x_discrete(guide = guide_axis(angle = 90)) + labs(x = "", y = "")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-46-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-47-1.png)<!-- -->
 
 Mivel ez egy szorzó (hány*szorosára* nő), így az 1 jelenti azt, hogy
 nincs összefüggés, az 1 fölötti értékek a pozitív, az 1 alattiak a
@@ -1241,7 +1291,7 @@ ggplot(comorbcombs[V1!=V2], aes(x = stringr::str_wrap(V1label, 15), y = stringr:
   scale_x_discrete(guide = guide_axis(angle = 90)) + labs(x = "", y = "")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-47-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-48-1.png)<!-- -->
 
 Látszik, hogy az alaphelyzet nem változott, így most már tudhatjuk, hogy
 a látottak nem az életkor és nem miatti
@@ -1269,7 +1319,7 @@ plot(comorbnet, vertex.size = igraph::V(comorbnet)$cooccurr*30,
      edge.width = igraph::E(comorbnet)$or*2)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-48-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-49-1.png)<!-- -->
 
 Ez a megközelítés különösen akkor hasznos, ha a fentinél jóval több
 társbetegséget tudunk vizsgálni.
@@ -1311,7 +1361,7 @@ ComplexUpset::upset(
 )
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-49-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-50-1.png)<!-- -->
 
 Az ábra alján látjuk a kombinációkat: amely betegségeket fekete pötty
 jelöl és függőlegesen össze vannak kötve, azok kombinációját jelenti a

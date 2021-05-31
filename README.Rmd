@@ -424,12 +424,11 @@ A kikódolás részleteit lásd korábban.
 Nézzük meg, hogy az elhunytak mekkora hányada szenvedett a 11 vizsgált társbetegségben (azaz mekkora volt a társbetegségek prevalenciája):
 
 ```{r}
-ggplot(merge(melt(MortData,  measure.vars = ComorbLabels$variable), ComorbLabels)[
+SimplePrevs <- merge(melt(MortData,  measure.vars = ComorbLabels$variable), ComorbLabels)[
   ,.(mean(value)*100, binom.test(sum(value), length(value))$conf.int[1]*100,
-     binom.test(sum(value), length(value))$conf.int[2]*100), .(varlabel)],
-  aes(x = varlabel, y = V1, ymin = V2, ymax = V3)) +
-  geom_point(position = position_dodge(width = 0.5)) + coord_flip() +
-  geom_errorbar(width = 0.5) + labs(x = "", y = "Prevalencia [%]")
+     binom.test(sum(value), length(value))$conf.int[2]*100), .(varlabel)]
+ggplot(SimplePrevs, aes(x = varlabel, y = V1, ymin = V2, ymax = V3)) + geom_point() + coord_flip() +
+  geom_errorbar(width = 0.4) + labs(x = "", y = "Prevalencia [%]")
 ```
 
 Érdekes -- és fontos -- kérdés, hogy ez hogyan néz ki életkoronként és nemenként. Az életkort (természetesen!) folytonos változóként kezeljük, és megengedjük, hogy az életkori mintázat eltérjen nemenként (azaz, hogy interakció legyen a két változó között). A megfelelő eszköz ehhez a spline-regresszió (GAM), amit az `mgcv` csomaggal fogunk megvalósítani, mind a 11 társbetegségre külön-külön:
@@ -514,7 +513,30 @@ comorbcombs$adjor <- sapply(1:nrow(comorbcombs), function(i)
 
 ### Eredmények
 
-Nézzük először a társbetegségeket páronként. Az alábbi ábra a szín világosságával mutatja, hogy az egyes kombinációknak mekkora a prevalenciája, azaz az elhunytak mekkora hányada szenvedett az adott társbetegség-párban (természetesen nem feltétlenük _csak_ abban a kettőben):
+Nézzük először a társbetegségeket páronként. Kezdjük a legkézenfekvőbb elemzéssel: számítsuk ki a prevalenciákat úgy mint korábban, de most ne az összes beteg körében, hanem csak az adott társbetegséggel rendelkezők körében! Lényegében tehát feltételessé tesszük az elemzést: nem azt nézzük, hogy mekkora arányban van jelen mondjuk a szívelégtelenség, hanem, hogy _feltéve_ hogy demencia jelen van, mekkor arányban van jelen szívelégtelenség (is). Ezt célszerű úgy ábrázolni, hogy adott betegség prevalenciáját tüntetjük fel a különböző feltételek mellett, hiszen ekkor látványosan, egy piros vonallal megjelölhetjük a feltétel nélkül prevalenciát, tehát az összes alany körében mért gyakoriságot:
+
+```{r, fig.height = 12}
+ggplot(merge(merge(rbindlist(setNames(lapply(ComorbLabels$variable, function(v)
+  melt(MortData[MortData[[v]]==TRUE],  measure.vars = ComorbLabels$variable)[
+    ,.(mean(value)*100, binom.test(sum(value), length(value))$conf.int[1]*100,
+       binom.test(sum(value), length(value))$conf.int[2]*100), .(variable)]), ComorbLabels$variable),
+  idcol = "Condition"),
+  ComorbLabels[, .(Condition = variable, ConditionLabel = varlabel)]),
+  ComorbLabels[, .(variable, VariableLabel = varlabel)], by = "variable")[Condition!=variable],
+  aes(x = ConditionLabel, y = V1, ymin = V2, ymax = V3)) + facet_wrap(~VariableLabel) +
+  geom_point() + coord_flip() + geom_errorbar(width = 0.5) + labs(x = "", y = "Prevalencia [%]") +
+  geom_hline(data = SimplePrevs[,.(VariableLabel = varlabel, V1)], aes(yintercept = V1), color = "red")
+```
+
+Az ábrán látható, hogy például a cukorbetegség prevalenciája 30% (ezt eddig is tudtuk), de a krónikus veseelégtelenséggel is rendelkezők elhunytak körében több, 40%, viszont a krónikus májbetegséggel bíró elhunytak körében kevesebb, 20%. Hát ezért is érdekes a társbetegségek kombinációnak vizsgálata...!
+
+(Persze ez még semmit nem mondott arról, hogy ezek a különbségek egyáltalán szignifikánsak e a szó statisztikai értelmében. A másik, hogy minden ilyen csak asszociáció, együttjárás, semmit nem tudhatunk arról, hogy melyik az oka melyiknek. Miért gyakoribb a cukorbetegség a veseelégtelenséggel rendelkező elhunytak körében?  A veseelégtelenség okoz cukorbetegséget? A cukorbetegség okoz veseelégtelenséget? Valami harmadik dolog okozza egyszerre mindkettőt? Vagy valami ennél is kuszább okozati lánc van...? Ezekre a kérdésekre önmagában a fenti eredmény nem válaszol.)
+
+Az ábrával az egyetlen baj, hogy elég nehezen áttekinthető. Ráadásul lehetne akár fordítva is ábrázolni, tehát, hogy az egyes társbetegséggel rendelkezők körében a többi milyen gyakori (csak ekkor nem lehetne ilyen szép egyenest húzni az összességében vett gyakorisághoz). További probléma, hogy a helyzet automatikusan szimmetrikus -- ha a veseelégtelenek körében több a cukorbeteg, akkor a cukorbetegek körében is több a veseelégtelen -- ez matematikai szükségszerűség, de az ábra nem sugallja ezt a szimmetriát.
+
+Tudunk ennél célszerűbb vizualizációt alkotni?
+
+A válasz az, hogy igen. Az alábbi ábra a szín világosságával mutatja, hogy az egyes kombinációknak mekkora a prevalenciája, azaz az elhunytak mekkora hányada szenvedett az adott társbetegség-párban (természetesen nem feltétlenük _csak_ abban a kettőben):
 
 ```{r, warning = FALSE}
 ggplot(comorbcombs, aes(x = stringr::str_wrap(V1label, 15), y = stringr::str_wrap(V2label, 15),
