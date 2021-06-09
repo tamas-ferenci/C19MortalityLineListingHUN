@@ -297,14 +297,14 @@ temp1$Var1 <- as.Date(temp1$Var1, origin = "1970-01-01")
 ```{r}
 ggplot(temp1, aes(x = Var1, y = Var2, fill = value)) + geom_tile() +
   scale_fill_distiller(palette = 'YlOrRd') + scale_x_date(date_breaks = "month", date_labels = "%b") +
-  labs(x = "", y = "Életkor [év]", fill = "")
+  labs(x = "", y = "Életkor [év]", fill = "") + guides(fill = FALSE)
 ```
 
 Nem túl látványos amit kaptunk, ennek az az oka, hogy egyben van simítva az egész adatsor, így a kiugró halálozási napok magas sűrűsége annyira összenyomja a színskálát, hogy ezen kívül szinte minden megkülönböztethetetlenné válik. Ezen segíthetünk, ha nem lineárisan színezünk:
 
 ```{r}
 ggplot(temp1, aes(x = Var1, y = Var2, fill = value)) + geom_tile() +
-  scale_fill_distiller(palette = 'YlOrRd', trans = "sqrt") +
+  scale_fill_distiller(palette = 'YlOrRd', trans = "sqrt") + guides(fill = FALSE) +
   scale_x_date(date_breaks = "month", date_labels = "%b") + labs(x = "", y = "Életkor [év]", fill = "")
 ```
 
@@ -322,7 +322,7 @@ temp2$Var1 <- as.Date(temp2$Var1, origin = "1970-01-01")
 ```{r}
 ggplot(temp2, aes(x = Var1, y = Var2, fill = value)) + geom_tile() +
   scale_fill_distiller(palette = 'YlOrRd') + scale_x_date(date_breaks = "month", date_labels = "%b") +
-  labs(x = "", y = "Életkor [év]", fill = "")
+  labs(x = "", y = "Életkor [év]", fill = "") + guides(fill = FALSE)
 ```
 
 Látványosabbá tehetjük az eredményt, ha feltüntetjük az átlagos életkort (mivel nagyon finom felbontásban megvan az eloszlást, ezt könnyen kiszámolhatjuk, lényegében numerikusan integrálunk), illetve ábrázoljuk csak a relevánsabb életkortartományt; ezt az ábrát fogjuk később használni.
@@ -354,8 +354,8 @@ ggplot(temp2, aes(x = Var1, y = Var2, fill = value)) + geom_tile() +
   scale_fill_distiller(palette = 'YlOrRd') +
   geom_line(data = temp2[,.(weighted.mean(Var2, value)), .(Var1)], aes(x = Var1, y = V1),
             inherit.aes = FALSE, color = "white") +
-  lims(y = c(40, NA)) + scale_x_date(date_breaks = "month", date_labels = "%b") +
-  labs(x = "", y = "Életkor [év]", fill = "")
+  coord_cartesian(ylim = c(40, NA)) + scale_x_date(date_breaks = "month", date_labels = "%b") +
+  labs(x = "", y = "Életkor [év]", fill = "") + guides(fill = FALSE)
 ```
 
 ### Értelmezés, következtetések, limitációk
@@ -624,7 +624,7 @@ ComplexUpset::upset(
 )
 ```
 
-Az ábra alján látjuk a kombinációkat: amely betegségeket fekete pötty jelöl és függőlegesen össze vannak kötve, azok kombinációját jelenti a kérdéses oszlop. Felette található az adott kombináció gyakorisága, de fontos, hogy ez úgy értendő, hogy mennyi beteg van _pontosan_ ezzel a kombinációval. (Tehát például ahol egyedül a magasvérnyomásnál van fekete pötty, az nem azt jelenti, hogy hányaknak van magas vérnyomása, hanem azt, hogy hányaknak van _csak_ magas vérnyomása.)
+Az ábra alján látjuk a kombinációkat: amely betegségeket fekete pötty jelöl és függőlegesen össze vannak kötve, azok kombinációját jelenti a kérdéses oszlop. Felette található az adott kombináció gyakorisága, de fontos, hogy ez úgy értendő, hogy mennyi beteg van _pontosan_ ezzel a kombinációval. (Tehát például ahol egyedül a magasvérnyomásnál van fekete pötty, az nem azt jelenti, hogy hányaknak van magas vérnyomása, hanem azt, hogy hányaknak van _csak_ magas vérnyomása.) Természetesen _csak_ a vizsgált 11 társbetegség körében értve ezt, így például a nulla társbetegség sem azt jelenti, hogy hánynak nincs társbetegsége, hanem, hogy hánynak nincs a vizsgált 11-ből.
 
 A felette lévő két diagram pedig az életkor és a nem eloszlását adja meg a kérdéses kombinációban, így az is érzékelhetővé válik, hogy ilyen szempontból eltérnek-e az egyes kombinációk.
 
@@ -635,9 +635,9 @@ Az ábra a 20 leggyakoribb kombinációt tartalmazza.
 - [x] Korspecifikus halálozás, mint alsó becslés az IFR-re.
 - [ ] Másféle KDE (pl. `ks` csomag) az életkori viszonyok időbeli alakulásának becslésére, vagy spline-ok.
 - [ ] További betegségek kikódolása.
-- [ ] Konfidenciaintervallum az átlagéletkorra.
+- [ ] Konfidenciaintervallum az átlagéletkorra (és külön, ránagyítva ábrázolva).
 - [ ] Medián használata az életkor alakulásánál (`Hmisc::wtd.quantile` vagy numerikusan?).
-- [ ] Színskála eltüntetése?
+- [x] Színskála eltüntetése?
 - [ ] Normálisabb konfidenciaintervallum a GAM-ra (`gratia`?).
 - [x] Komorbiditások számának életkor- és nemspecifikus vizsgálata.
 - [x] Komorbiditások kombinációinak komplexebb vizsgálata.

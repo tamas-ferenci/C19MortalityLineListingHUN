@@ -211,11 +211,11 @@ knitr::kable(table(MortData$Sex), col.names = c("Írásmód", "Gyakoriság"))
 
 | Írásmód | Gyakoriság |
 |:--------|-----------:|
-| férfi   |      10853 |
-| Férfi   |       4431 |
-| no      |      10448 |
-| No      |       2477 |
-| Nő      |       1524 |
+| férfi   |      10910 |
+| Férfi   |       4454 |
+| no      |      10495 |
+| No      |       2489 |
+| Nő      |       1541 |
 
 Nem túlságosan, úgyhogy ezt javítsuk ki:
 
@@ -288,54 +288,54 @@ knitr::kable(sort(table(unlist(Comorbs)), decreasing = TRUE)[1:50],
 
 | Társbetegség                      | Gyakoriság |
 |:----------------------------------|-----------:|
-| magasvérnyomás-betegség           |      11144 |
-| cukorbetegség                     |       8411 |
-| magas vérnyomás                   |       8145 |
-| iszkémiás szívbetegség            |       3067 |
-| szívbetegség                      |       2391 |
-| demencia                          |       2024 |
-| szívelégtelenség                  |       1550 |
-| krónikus veseelégtelenség         |       1537 |
-| szívritmuszavar                   |       1364 |
-| daganatos megbetegedés            |       1339 |
-| veseelégtelenség                  |       1308 |
-| tüdobetegség                      |       1216 |
-| érelmeszesedés                    |        915 |
-| vérszegénység                     |        886 |
-| kóros elhízás                     |        855 |
-| nem ismert alapbetegség           |        853 |
-| pitvarfibrilláció                 |        809 |
-| asztma                            |        732 |
-| krónikus obstruktív tüdobetegség  |        693 |
-| elhízás                           |        664 |
-| agyi infarktus                    |        649 |
-| parkinson-kór                     |        636 |
-| stroke                            |        626 |
-| pangásos szívelégtelenség         |        541 |
-| adat feltöltés alatt              |        478 |
-| epilepszia                        |        462 |
-| általános érelmeszesedés          |        441 |
-| májbetegség                       |        421 |
-| érszukület                        |        403 |
-| alzheimer-kór                     |        343 |
+| magasvérnyomás-betegség           |      11228 |
+| cukorbetegség                     |       8458 |
+| magas vérnyomás                   |       8161 |
+| iszkémiás szívbetegség            |       3071 |
+| szívbetegség                      |       2424 |
+| demencia                          |       2034 |
+| szívelégtelenség                  |       1557 |
+| krónikus veseelégtelenség         |       1544 |
+| szívritmuszavar                   |       1365 |
+| daganatos megbetegedés            |       1348 |
+| veseelégtelenség                  |       1317 |
+| tüdobetegség                      |       1227 |
+| érelmeszesedés                    |        921 |
+| vérszegénység                     |        889 |
+| nem ismert alapbetegség           |        862 |
+| kóros elhízás                     |        860 |
+| pitvarfibrilláció                 |        816 |
+| asztma                            |        739 |
+| krónikus obstruktív tüdobetegség  |        696 |
+| elhízás                           |        674 |
+| agyi infarktus                    |        651 |
+| parkinson-kór                     |        639 |
+| stroke                            |        628 |
+| pangásos szívelégtelenség         |        545 |
+| adat feltöltés alatt              |        479 |
+| epilepszia                        |        463 |
+| általános érelmeszesedés          |        444 |
+| májbetegség                       |        423 |
+| érszukület                        |        409 |
+| alzheimer-kór                     |        344 |
 | csontritkulás                     |        328 |
 | reflux                            |        316 |
-| depresszió                        |        301 |
-| pajzsmirigybetegség               |        267 |
+| depresszió                        |        304 |
+| pajzsmirigybetegség               |        270 |
+| vesebetegség                      |        267 |
+| daganatos betegség                |        262 |
 | magasvérnyomás betegség           |        260 |
-| vesebetegség                      |        260 |
-| daganatos betegség                |        256 |
-| pajzsmirigy betegség              |        235 |
-| magas vérzsírszint                |        231 |
+| pajzsmirigy betegség              |        239 |
+| magas vérzsírszint                |        232 |
 | tüdogyulladás                     |        221 |
 | pajzsmirigy alulmuködés           |        218 |
-| szív- és érrendszeri betegség     |        208 |
-| szív- és érrendszeri megbetegedés |        194 |
-| tüdoembólia                       |        178 |
-| krónikus tüdobetegség             |        164 |
-| idült iszkémiás szívbetegség      |        162 |
+| szív- és érrendszeri betegség     |        209 |
+| szív- és érrendszeri megbetegedés |        196 |
+| tüdoembólia                       |        179 |
+| krónikus tüdobetegség             |        165 |
+| idült iszkémiás szívbetegség      |        163 |
 | köszvény                          |        157 |
-| szívinfarktus                     |        152 |
+| szívinfarktus                     |        155 |
 | agykárosodás                      |        146 |
 | agysorvadás                       |        146 |
 
@@ -410,7 +410,7 @@ res <- lapply(unique(h), function(x) IndivComorbNames[h==x])
 resDF <- as.data.table(plyr::ldply(res, rbind))
 ```
 
-Ezzel lényegében véletlenszerűen kapjuk meg a halmazokat. Összesen 2989
+Ezzel lényegében véletlenszerűen kapjuk meg a halmazokat. Összesen 2991
 halmazunk keletkezett. Az egyes halmazok tartalmát jól megadja az első
 elemük (az első oszlop), mert az mindenképp létezik. Nézzük meg az első
 20-at, nem feledve, hogy itt az “első” semmiféle érdemi sorrendet nem
@@ -690,7 +690,7 @@ ComorbLabels <- data.table(variable = c("atr_fib", "cancer", "copd", "demen", "d
 
 ## Az adatbázis jellemzői
 
-Jelen elemzés lezárásának a dátuma 2021-05-31, ekkor 29728 elhunyt volt
+Jelen elemzés lezárásának a dátuma 2021-06-09, ekkor 29883 elhunyt volt
 az adatbázisban, akinek halálozási időpontja is beazonosítható volt.
 Jelen vizsgálat az ő adataik felhasználásával készült.
 
@@ -751,7 +751,7 @@ sűrűség, minél sötét:
 ``` r
 ggplot(temp1, aes(x = Var1, y = Var2, fill = value)) + geom_tile() +
   scale_fill_distiller(palette = 'YlOrRd') + scale_x_date(date_breaks = "month", date_labels = "%b") +
-  labs(x = "", y = "Életkor [év]", fill = "")
+  labs(x = "", y = "Életkor [év]", fill = "") + guides(fill = FALSE)
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-28-1.png)<!-- -->
@@ -764,7 +764,7 @@ színezünk:
 
 ``` r
 ggplot(temp1, aes(x = Var1, y = Var2, fill = value)) + geom_tile() +
-  scale_fill_distiller(palette = 'YlOrRd', trans = "sqrt") +
+  scale_fill_distiller(palette = 'YlOrRd', trans = "sqrt") + guides(fill = FALSE) +
   scale_x_date(date_breaks = "month", date_labels = "%b") + labs(x = "", y = "Életkor [év]", fill = "")
 ```
 
@@ -788,7 +788,7 @@ temp2$Var1 <- as.Date(temp2$Var1, origin = "1970-01-01")
 ``` r
 ggplot(temp2, aes(x = Var1, y = Var2, fill = value)) + geom_tile() +
   scale_fill_distiller(palette = 'YlOrRd') + scale_x_date(date_breaks = "month", date_labels = "%b") +
-  labs(x = "", y = "Életkor [év]", fill = "")
+  labs(x = "", y = "Életkor [év]", fill = "") + guides(fill = FALSE)
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-31-1.png)<!-- -->
@@ -801,7 +801,7 @@ használni.
 
 ### Eredmények
 
-Az adatbázis szerint az elhunytak közül 15281 fő (51.4%) férfi.
+Az adatbázis szerint az elhunytak közül 15361 fő (51.4%) férfi.
 
 Az életkori eloszlás:
 
@@ -840,11 +840,9 @@ ggplot(temp2, aes(x = Var1, y = Var2, fill = value)) + geom_tile() +
   scale_fill_distiller(palette = 'YlOrRd') +
   geom_line(data = temp2[,.(weighted.mean(Var2, value)), .(Var1)], aes(x = Var1, y = V1),
             inherit.aes = FALSE, color = "white") +
-  lims(y = c(40, NA)) + scale_x_date(date_breaks = "month", date_labels = "%b") +
-  labs(x = "", y = "Életkor [év]", fill = "")
+  coord_cartesian(ylim = c(40, NA)) + scale_x_date(date_breaks = "month", date_labels = "%b") +
+  labs(x = "", y = "Életkor [év]", fill = "") + guides(fill = FALSE)
 ```
-
-    ## Warning: Removed 75140 rows containing missing values (geom_tile).
 
 ![](README_files/figure-gfm/unnamed-chunk-34-1.png)<!-- -->
 
@@ -888,7 +886,7 @@ szerint rétegezzük az adatainkat, és így kapcsoljuk össze a korfával):
 PopData <- as.data.table(eurostat::get_eurostat("demo_pjan"))
 ```
 
-    ## Table demo_pjan cached at C:\Users\FERENC~1\AppData\Local\Temp\RtmpGIJ91h/eurostat/demo_pjan_date_code_FF.rds
+    ## Table demo_pjan cached at C:\Users\FERENC~1\AppData\Local\Temp\RtmpYDLDbJ/eurostat/demo_pjan_date_code_FF.rds
 
 ``` r
 PopData <- PopData[geo=="HU"&sex!="T"&!age%in%c("TOTAL", "UNK")&time=="2020-01-01"]
@@ -1156,7 +1154,8 @@ prevalenciát, tehát az összes alany körében mért gyakoriságot:
 ggplot(merge(merge(rbindlist(setNames(lapply(ComorbLabels$variable, function(v)
   melt(MortData[MortData[[v]]==TRUE],  measure.vars = ComorbLabels$variable)[
     ,.(mean(value)*100, binom.test(sum(value), length(value))$conf.int[1]*100,
-       binom.test(sum(value), length(value))$conf.int[2]*100), .(variable)]), ComorbLabels$variable), idcol = "Condition"),
+       binom.test(sum(value), length(value))$conf.int[2]*100), .(variable)]), ComorbLabels$variable),
+  idcol = "Condition"),
   ComorbLabels[, .(Condition = variable, ConditionLabel = varlabel)]),
   ComorbLabels[, .(variable, VariableLabel = varlabel)], by = "variable")[Condition!=variable],
   aes(x = ConditionLabel, y = V1, ymin = V2, ymax = V3)) + facet_wrap(~VariableLabel) +
@@ -1369,7 +1368,10 @@ kérdéses oszlop. Felette található az adott kombináció gyakorisága, de
 fontos, hogy ez úgy értendő, hogy mennyi beteg van *pontosan* ezzel a
 kombinációval. (Tehát például ahol egyedül a magasvérnyomásnál van
 fekete pötty, az nem azt jelenti, hogy hányaknak van magas vérnyomása,
-hanem azt, hogy hányaknak van *csak* magas vérnyomása.)
+hanem azt, hogy hányaknak van *csak* magas vérnyomása.) Természetesen
+*csak* a vizsgált 11 társbetegség körében értve ezt, így például a nulla
+társbetegség sem azt jelenti, hogy hánynak nincs társbetegsége, hanem,
+hogy hánynak nincs a vizsgált 11-ből.
 
 A felette lévő két diagram pedig az életkor és a nem eloszlását adja meg
 a kérdéses kombinációban, így az is érzékelhetővé válik, hogy ilyen
@@ -1383,10 +1385,11 @@ Az ábra a 20 leggyakoribb kombinációt tartalmazza.
 -   [ ] Másféle KDE (pl. `ks` csomag) az életkori viszonyok időbeli
     alakulásának becslésére, vagy spline-ok.
 -   [ ] További betegségek kikódolása.
--   [ ] Konfidenciaintervallum az átlagéletkorra.
+-   [ ] Konfidenciaintervallum az átlagéletkorra (és külön, ránagyítva
+    ábrázolva).
 -   [ ] Medián használata az életkor alakulásánál (`Hmisc::wtd.quantile`
     vagy numerikusan?).
--   [ ] Színskála eltüntetése?
+-   [x] Színskála eltüntetése?
 -   [ ] Normálisabb konfidenciaintervallum a GAM-ra (`gratia`?).
 -   [x] Komorbiditások számának életkor- és nemspecifikus vizsgálata.
 -   [x] Komorbiditások kombinációinak komplexebb vizsgálata.
