@@ -15,7 +15,7 @@ options(digits = 1, knitr.kable.NA = "")
 
 ## Bevezető gondolatok
 
-A hivatalos magyar járványügyi adatszolgáltatás egyik nehezen érthető vonása, hogy míg a legtöbb téren szinte minden információt, még a legelemibbeket is visszatartja (kizárólag egy járvány kezdete óta összegzett értéket közöl feldolgozható formában, de napi adatot nem, az összegzettet is csak a fertőzöttek, a halottak és a tesztek számáról, ezen kívül a fertőzöttek területi adatait adja meg, egy képfájlban (!) -- a tesztek típusáról, a tesztkapacitásról nincs információ, a kórházba kerülő betegek, az elhunytak és a tesztelések területi adatairól nincs információ, a fertőzöttek, kórházba kerülők életkoráról, neméről nincs információ, a kórházi kapacitásról, a kezelések kimeneti adatairól nincs információ stb. stb.; érdemes ezt összevetni egy [amerikai](https://www.doh.wa.gov/Emergencies/COVID19/DataDashboard) vagy az [angol](https://coronavirus.data.gov.uk/) adatközléssel, de sajnos akár a [macedónnal](https://gdi-sk.maps.arcgis.com/apps/opsdashboard/index.html#/2096bd4b051b42948ac3f5747e80c3a5) is), addig egyetlen egy téren viszont páratlanul részletes: ez az elhunytakra vonatkozó adatszolgáltatás. Egyedi adatokat közölnek, életkorral, nemmel, és teljes társbetegség listával. Én az abszolút élharcosa vagyok a teljes transzparenciának, de ez még szerintem is szükségtelen, és nagyon komoly adatvédelmi kérdéseket vet fel, amiknél még szerintem sem biztos, hogy fontosabb ezen információk nyilvános megismerése. (Nagyjából az első ezer halottig foglalkoztam ezzel az aspektussal, közülük 4-et tudtam névvel-címmel teljes bizonyossággal beazonosítani a sajtóból, és családi, ismerősi körömből származó információk alapján. És ilyen módon megtudni az összes betegségüket, beleértve mondjuk olyanokat, hogy alkoholos májzsugor... Mindeközben arra a kérdésre, hogy a regisztrált eseteknek miért nem közlik legalább az életkori eloszlását, tehát, hogy mennyi eset volt mondjuk 60 és 70 év között tegnap, az a válasz született a hivatalos sajtótájékoztatón, hogy azért, "mert az lekövethetővé tenne embereket". Így!) Viszont ha már egyszer, akármilyen okból is és csak ezen az egyetlen egy téren, de ilyen részletes adataink vannak, igyekezzünk legalább ezeket felhasználni a járvány jobb megismerésére, megértésére.
+A hivatalos magyar járványügyi adatszolgáltatás számos, borzasztóan romboló hatású [hibával bír](https://github.com/tamas-ferenci/GondolatokAJarvanyugyiAdatokKozleserol/). Egyik nehezen érthető vonása, hogy míg a legtöbb téren szinte minden információt, még a legelemibbeket is visszatartja (kizárólag egy járvány kezdete óta összegzett értéket közöl feldolgozható formában, de napi adatot nem, az összegzettet is csak a fertőzöttek, a halottak és a tesztek számáról, ezen kívül a fertőzöttek területi adatait adja meg, egy képfájlban (!) -- a tesztek típusáról, a tesztkapacitásról nincs információ, a kórházba kerülő betegek, az elhunytak és a tesztelések területi adatairól nincs információ, a fertőzöttek, kórházba kerülők életkoráról, neméről nincs információ, a kórházi kapacitásról, a kezelések kimeneti adatairól nincs információ stb. stb.; érdemes ezt összevetni egy [amerikai](https://www.doh.wa.gov/Emergencies/COVID19/DataDashboard) vagy az [angol](https://coronavirus.data.gov.uk/) adatközléssel, de sajnos akár a [macedónnal](https://gdi-sk.maps.arcgis.com/apps/opsdashboard/index.html#/2096bd4b051b42948ac3f5747e80c3a5) is), addig egyetlen egy téren viszont páratlanul részletes: ez az elhunytakra vonatkozó adatszolgáltatás. Egyedi adatokat közölnek, életkorral, nemmel, és teljes társbetegség listával. Én az abszolút élharcosa vagyok a teljes transzparenciának, de ez még szerintem is szükségtelen, és nagyon komoly adatvédelmi kérdéseket vet fel, amiknél még szerintem sem biztos, hogy fontosabb ezen információk nyilvános megismerése. (Nagyjából az első ezer halottig foglalkoztam ezzel az aspektussal, közülük 4-et tudtam névvel-címmel teljes bizonyossággal beazonosítani a sajtóból, és családi, ismerősi körömből származó információk alapján. És ilyen módon megtudni az összes betegségüket, beleértve mondjuk olyanokat, hogy alkoholos májzsugor... Mindeközben arra a kérdésre, hogy a regisztrált eseteknek miért nem közlik legalább az életkori eloszlását, tehát, hogy mennyi eset volt mondjuk 60 és 70 év között tegnap, az a válasz született a hivatalos sajtótájékoztatón, hogy azért, "mert az lekövethetővé tenne embereket". Így!) Viszont ha már egyszer, akármilyen okból is és csak ezen az egyetlen egy téren, de ilyen részletes adataink vannak, igyekezzünk legalább ezeket felhasználni a járvány jobb megismerésére, megértésére.
 
 ## Limitációk
 
@@ -96,6 +96,7 @@ A kapott adatbázist mentsük is el, hogy az esetleges egyéb felhasználóknak 
 
 ```{r}
 saveRDS(MortData, "MortData.rds")
+write.csv2(MortData, "MortData.csv", row.names = FALSE)
 ```
 
 ### A társbetegségek elvileg teljeskörű kikódolása
@@ -128,7 +129,7 @@ IndivComorbNames <- unique(unlist(Comorbs))
 IndivComorbNames <- IndivComorbNames[IndivComorbNames!=""]
 ```
 
-Az elhunytaknak összesen `length(IndivComorbNames)` egyedi társbetegségük van.
+Az elhunytaknak összesen `r length(IndivComorbNames)` egyedi társbetegségük van.
 
 Az elgépelések ellen legjobban védekezni sztring-hasonlóság kereséssel lehet. Használjuk a `stringdist` csomagot, mely beépítetten a korlátozott Damerau-Levenshtein távolságmetrikát alkalmazza:
 
@@ -296,16 +297,18 @@ temp1$Var1 <- as.Date(temp1$Var1, origin = "1970-01-01")
 
 ```{r}
 ggplot(temp1, aes(x = Var1, y = Var2, fill = value)) + geom_tile() +
-  scale_fill_distiller(palette = 'YlOrRd') + scale_x_date(date_breaks = "month", date_labels = "%b") +
-  labs(x = "", y = "Életkor [év]", fill = "") + guides(fill = FALSE)
+  scale_fill_distiller(palette = 'YlOrRd') + 
+  scale_x_date(date_breaks = "months", labels = scales::label_date_short()) +
+  labs(x = "", y = "Életkor [év]", fill = "") + guides(fill = "none")
 ```
 
 Nem túl látványos amit kaptunk, ennek az az oka, hogy egyben van simítva az egész adatsor, így a kiugró halálozási napok magas sűrűsége annyira összenyomja a színskálát, hogy ezen kívül szinte minden megkülönböztethetetlenné válik. Ezen segíthetünk, ha nem lineárisan színezünk:
 
 ```{r}
 ggplot(temp1, aes(x = Var1, y = Var2, fill = value)) + geom_tile() +
-  scale_fill_distiller(palette = 'YlOrRd', trans = "sqrt") + guides(fill = FALSE) +
-  scale_x_date(date_breaks = "month", date_labels = "%b") + labs(x = "", y = "Életkor [év]", fill = "")
+  scale_fill_distiller(palette = 'YlOrRd', trans = "sqrt") + guides(fill = "none") +
+  scale_x_date(date_breaks = "months", labels = scales::label_date_short()) +
+  labs(x = "", y = "Életkor [év]", fill = "")
 ```
 
 (Ez négyzetgyök-transzformációval készült; a nagyon extrém alacsony értékek miatt érdekes módon a logaritmus még annál is rosszabb eredményt ad, mint a kiindulási ábra)
@@ -321,8 +324,9 @@ temp2$Var1 <- as.Date(temp2$Var1, origin = "1970-01-01")
 
 ```{r}
 ggplot(temp2, aes(x = Var1, y = Var2, fill = value)) + geom_tile() +
-  scale_fill_distiller(palette = 'YlOrRd') + scale_x_date(date_breaks = "month", date_labels = "%b") +
-  labs(x = "", y = "Életkor [év]", fill = "") + guides(fill = FALSE)
+  scale_fill_distiller(palette = 'YlOrRd') +
+  scale_x_date(date_breaks = "months", labels = scales::label_date_short()) +
+  labs(x = "", y = "Életkor [év]", fill = "") + guides(fill = "none")
 ```
 
 Látványosabbá tehetjük az eredményt, ha feltüntetjük az átlagos életkort (mivel nagyon finom felbontásban megvan az eloszlást, ezt könnyen kiszámolhatjuk, lényegében numerikusan integrálunk), illetve ábrázoljuk csak a relevánsabb életkortartományt; ezt az ábrát fogjuk később használni.
@@ -354,8 +358,9 @@ ggplot(temp2, aes(x = Var1, y = Var2, fill = value)) + geom_tile() +
   scale_fill_distiller(palette = 'YlOrRd') +
   geom_line(data = temp2[,.(weighted.mean(Var2, value)), .(Var1)], aes(x = Var1, y = V1),
             inherit.aes = FALSE, color = "white") +
-  coord_cartesian(ylim = c(40, NA)) + scale_x_date(date_breaks = "month", date_labels = "%b") +
-  labs(x = "", y = "Életkor [év]", fill = "") + guides(fill = FALSE)
+  coord_cartesian(ylim = c(40, NA)) +
+  scale_x_date(date_breaks = "months", labels = scales::label_date_short()) +
+  labs(x = "", y = "Életkor [év]", fill = "") + guides(fill = "none")
 ```
 
 ### Értelmezés, következtetések, limitációk
